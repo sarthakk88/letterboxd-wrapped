@@ -1,4 +1,4 @@
-name: Enhanced Letterboxd Data Scraping
+name: Letterboxd Data Scraping
 
 on:
   schedule:
@@ -27,13 +27,13 @@ jobs:
       run: |
         pip install -r scraper/requirements.txt
         
-    - name: Run enhanced scraper
+    - name: Run scraper
       env:
         LETTERBOXD_USERNAME: ${{ secrets.LETTERBOXD_USERNAME }}
         TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
       run: |
         cd scraper
-        python enhanced_scraper.py
+        python scrape_letterboxd.py
         
     - name: Move data files to correct location
       run: |
@@ -54,6 +54,6 @@ jobs:
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
-          git commit -m "Update Letterboxd data with enhanced scraper - $(date '+%Y-%m-%d %H:%M:%S')"
+          git commit -m "Update Letterboxd data with scraper - $(date '+%Y-%m-%d %H:%M:%S')"
           git push
         fi
