@@ -32,6 +32,24 @@ jobs:
         cd scraper
         python scrape_letterboxd.py
 
+    - name: Move generated data into place
+      run: |
+        mkdir -p data
+        if [ -f scraper/data/movies.csv ]; then
+          mv scraper/data/movies.csv data/
+        fi
+        if [ -f scraper/data/stats.json ]; then
+          mv scraper/data/stats.json data/
+        fi
+        
+    - name: Resolve any rebase conflicts in stats.json
+      run: |
+        # If during a rebase conflict, accept the incoming stats.json update
+        if grep -q '^<<<<<<<' data/stats.json; then
+          git add data/stats.json
+          git rebase --continue || echo "No rebase in progress"
+        fi
+
     - name: Commit and push changes
       run: |
         git config --local user.email "action@github.com"
