@@ -174,7 +174,11 @@ class EnhancedScraper:
                     break
             # Top 3 cast
             cast = details.get('credits', {}).get('cast', [])
-            movie['cast'] = ', '.join(c['name'] for c in cast[:3])
+            # Sort cast members by popularity (descending) and pick top 3
+            top_cast = sorted(cast, key=lambda c: c.get('popularity', 0), reverse=True)[:3]
+
+            # Build comma-separated string of top 3 names
+            movie['cast'] = ', '.join(c.get('name', '') for c in top_cast)
             time.sleep(0.1)
         except Exception:
             pass
