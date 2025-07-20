@@ -118,71 +118,74 @@ class LetterboxdScraper:
                 print(f"Error scraping diary page {page}: {e}")
                 continue
 
-    def extract_movie_from_diary_entry(self, entry):
-        """Extract movie data from a diary entry row"""
-        try:
-            movie_data = {}
-            
-            # Get movie title and year
-            title_cell = entry.find('td', class_='td-film-details')
-            if title_cell:
-                title_link = title_cell.find('a')
-                if title_link:
-                    movie_data['title'] = title_link.get('title', '').strip()
-                    
-                    # Extract year from title or href
-                    href = title_link.get('href', '')
-                    year_match = re.search(r'-(\d{4})/?$', href)
-                    if year_match:
-                        movie_data['year'] = year_match.group(1)
-                    else:
-                        # Try to get year from title text
-                        year_match = re.search(r'\((\d{4})\)', movie_data['title'])
-                        if year_match:
-                            movie_data['year'] = year_match.group(1)
-                            movie_data['title'] = re.sub(r'\s*\(\d{4}\)', '', movie_data['title'])
-            
-            # Get watch date
-            date_cell = entry.find('td', class_='td-calendar')
-            if date_cell:
-                date_link = date_cell.find('a')
-                if date_link and date_link.get('href'):
-                    # Extract date from href like "/username/films/diary/for/2023/03/15/"
-                    date_match = re.search(r'/(\d{4})/(\d{2})/(\d{2})/', date_link.get('href'))
-                    if date_match:
-                        year, month, day = date_match.groups()
-                        movie_data['watch_date'] = f"{year}-{month}-{day}"
-            
-            # Get rating
-            rating_cell = entry.find('td', class_='td-rating')
-            if rating_cell:
-                rating_span = rating_cell.find('span', class_='rating')
-                if rating_span:
-                    # Rating is usually in class name like 'rating-green-4' for 4 stars
-                    class_list = rating_span.get('class', [])
-                    for class_name in class_list:
-                        if 'rating-' in class_name:
-                            rating_match = re.search(r'rating-\w+-(\d+)', class_name)
-                            if rating_match:
-                                # Convert to 5-star scale (Letterboxd uses 10-star internally)
-                                rating_value = int(rating_match.group(1))
-                                movie_data['rating'] = str(rating_value / 2.0)
-            
-            # Only return if we have essential data
-            if movie_data.get('title') and movie_data.get('watch_date'):
-                # Set defaults for missing data
-                movie_data.setdefault('year', '')
-                movie_data.setdefault('rating', '')
-                movie_data.setdefault('director', '')
-                movie_data.setdefault('genre', '')
-                
-                return movie_data
-            
-        except Exception as e:
-            print(f"Error extracting movie data from diary entry: {e}")
-        
-        return None
+    # Place these at the start of your diary scrape method, before you loop:
+    current_month = None
+    current_year = None
 
+    def extract_movie_from_diary_entry(self, entry):
+        global current_month, current_year
+
+        try:
+            # === DATE GROUPING HANDLING ===
+            # Calendar cell: update month and year if present
+            cal_cell = entry.find('td', class_='td-calendar')
+            if cal_cell:
+                # New month? (e.g. <strong>Feb</strong>)
+                strong = cal_cell.find('strong')
+                if strong:
+                    current_month = strong.text.strip()
+                # New year? (e.g. <small>2025</small>)
+                small = cal_cell.find('small')
+                if small:
+                    current_year = small.text.strip()
+
+            # Day cell (always present)
+            day_cell = entry.find('td', class_='td-day')
+            day = day_cell.find('a').text.strip() if day_cell and day_cell.find('a') else None
+
+            # Fallback: don't proceed if any date component is missing
+            if not (day and current_month and current_year):
+                return None
+
+            # Build ISO date
+            try:
+                watch_date = datetime.strptime(f"{day} {current_month} {current_year}", "%d %b %Y").date().isoformat()
+            except Exception:
+                watch_date = ''
+
+            # === TITLE & YEAR ===
+            details = entry.find('td', class_='td-film-details')
+            title_tag = details.find('h2', class_='name') if details else None
+            title = title_tag.get_text(strip=True) if title_tag else ''
+            year_tag = details.find('span', class_='releasedate') if details else None
+            year = year_tag.find('a').get_text(strip=True) if year_tag and year_tag.find('a') else ''
+
+            # === RATING ===
+            rating = ''
+            rating_td = entry.find('td', class_='td-rating')
+            if rating_td:
+                rating_span = rating_td.find('span', class_='rating')
+                if rating_span:
+                    for cls in rating_span.get('class', []):
+                        if cls.startswith("rated-"):
+                            value = int(cls.split("-")[1])
+                            rating = str(value / 2.0)
+
+            # === OUTPUT (add director/genre if you want) ===
+            if title and watch_date:
+                return {
+                    "title": title,
+                    "year": year,
+                    "watch_date": watch_date,
+                    "rating": rating,
+                    "director": "",
+                    "genre": ""
+                }
+        except Exception as e:
+            print(f"Error extracting diary row: {e}")
+
+        return None
+        
     def calculate_statistics(self):
         """Calculate comprehensive statistics from scraped data"""
         if not self.movies_data:
