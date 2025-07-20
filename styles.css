@@ -66,6 +66,91 @@ body {
     border-bottom-color: #00d735;
 }
 
+/* Date Filter Section */
+.date-filter-section {
+    background: #1f2937;
+    border: 1px solid #445566;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.date-filter-section h2 {
+    color: #fff;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.date-filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.date-input {
+    background: #14181c;
+    border: 1px solid #445566;
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: #00d735;
+}
+
+.date-separator {
+    color: #9ab;
+    font-weight: 500;
+}
+
+.filter-btn {
+    background: #00d735;
+    color: #14181c;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background: #4ade80;
+}
+
+.clear-btn {
+    background: #6b7280;
+    color: #fff;
+}
+
+.clear-btn:hover {
+    background: #9ca3af;
+}
+
+.filter-status {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #9ab;
+}
+
+/* Page Content */
+.page-content {
+    display: none;
+}
+
+.page-content.active {
+    display: block;
+}
+
 /* Main Content */
 .main-content {
     padding: 30px 0;
@@ -153,7 +238,9 @@ body {
 .chart-card,
 .directors-card,
 .goals-card,
-.recent-card {
+.recent-card,
+.stat-detail-card,
+.list-card {
     background: #1f2937;
     border: 1px solid #445566;
     border-radius: 8px;
@@ -339,6 +426,19 @@ body {
     margin-right: 8px;
 }
 
+/* Stats and Lists Pages */
+.stats-grid,
+.lists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.stat-detail-card,
+.list-card {
+    grid-column: span 1;
+}
+
 /* Footer */
 .site-footer {
     background: #1f2937;
@@ -443,6 +543,11 @@ body {
     
     .chart-container {
         height: 250px;
+    }
+    
+    .date-filter-controls {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 

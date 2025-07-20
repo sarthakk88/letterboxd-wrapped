@@ -13,112 +13,174 @@
         <div class="container">
             <h1 class="site-title">LETTERBOXD</h1>
             <nav class="main-nav">
-                <span class="nav-item active">DIARY</span>
-                <span class="nav-item">STATS</span>
-                <span class="nav-item">LISTS</span>
+                <span class="nav-item active" data-page="diary">DIARY</span>
+                <span class="nav-item" data-page="stats">STATS</span>
+                <span class="nav-item" data-page="lists">LISTS</span>
             </nav>
         </div>
     </div>
 
     <main class="main-content">
         <div class="container">
-            <div class="page-header">
-                <h1 class="page-title">My Film Diary</h1>
-                <div class="last-updated" id="last-updated-text">Last updated: Loading...</div>
+            <!-- Date Filter Section -->
+            <div class="date-filter-section">
+                <h2>Filter by Date Range</h2>
+                <div class="date-filter-controls">
+                    <input type="date" id="startDate" class="date-input">
+                    <span class="date-separator">to</span>
+                    <input type="date" id="endDate" class="date-input">
+                    <button id="applyFilter" class="filter-btn">Apply Filter</button>
+                    <button id="clearFilter" class="filter-btn clear-btn">Clear Filter</button>
+                </div>
+                <div class="filter-status" id="filterStatus"></div>
             </div>
 
-            <div class="dashboard-grid">
-                <!-- Stats Overview -->
-                <section class="stats-overview">
-                    <div class="stat-card primary">
-                        <div class="stat-value" id="movies-this-year">--</div>
-                        <div class="stat-label">films this year</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-movies">--</div>
-                        <div class="stat-label">total films</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="average-rating">--</div>
-                        <div class="stat-label">average rating</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-runtime">--</div>
-                        <div class="stat-label">days watched</div>
-                    </div>
-                </section>
+            <!-- Page Content Containers -->
+            <div id="diary-page" class="page-content active">
+                <div class="page-header">
+                    <h1 class="page-title">My Film Diary</h1>
+                    <div class="last-updated" id="last-updated-text">Last updated: Loading...</div>
+                </div>
 
-                <!-- Charts Section -->
-                <section class="chart-card">
-                    <h2 class="card-title">Genre Distribution</h2>
-                    <div class="chart-container">
-                        <canvas id="genreChart"></canvas>
-                    </div>
-                </section>
+                <div class="dashboard-grid">
+                    <!-- Stats Overview -->
+                    <section class="stats-overview">
+                        <div class="stat-card primary">
+                            <div class="stat-value" id="movies-this-year">--</div>
+                            <div class="stat-label">films this year</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-movies">--</div>
+                            <div class="stat-label">total films</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="average-rating">--</div>
+                            <div class="stat-label">average rating</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-runtime">--</div>
+                            <div class="stat-label">days watched</div>
+                        </div>
+                    </section>
 
-                <section class="chart-card">
-                    <h2 class="card-title">Rating Distribution</h2>
-                    <div class="chart-container">
-                        <canvas id="ratingChart"></canvas>
-                    </div>
-                </section>
+                    <!-- Charts Section -->
+                    <section class="chart-card">
+                        <h2 class="card-title">Genre Distribution</h2>
+                        <div class="chart-container">
+                            <canvas id="genreChart"></canvas>
+                        </div>
+                    </section>
 
-                <section class="chart-card wide">
-                    <h2 class="card-title">Monthly Activity</h2>
-                    <div class="chart-container">
-                        <canvas id="monthlyChart"></canvas>
-                    </div>
-                </section>
+                    <section class="chart-card">
+                        <h2 class="card-title">Rating Distribution</h2>
+                        <div class="chart-container">
+                            <canvas id="ratingChart"></canvas>
+                        </div>
+                    </section>
 
-                <!-- Directors Section -->
-                <section class="directors-card">
-                    <h2 class="card-title">Top Directors</h2>
-                    <div class="directors-grid">
-                        <div class="director-column">
-                            <h3 class="column-title">This Year</h3>
-                            <div class="director-list" id="top-directors-year">
-                                <!-- Populated by JavaScript -->
+                    <section class="chart-card wide">
+                        <h2 class="card-title">Monthly Activity</h2>
+                        <div class="chart-container">
+                            <canvas id="monthlyChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- Directors Section -->
+                    <section class="directors-card">
+                        <h2 class="card-title">Top Directors</h2>
+                        <div class="directors-grid">
+                            <div class="director-column">
+                                <h3 class="column-title">This Year</h3>
+                                <div class="director-list" id="top-directors-year">
+                                    <!-- Populated by JavaScript -->
+                                </div>
+                            </div>
+                            <div class="director-column">
+                                <h3 class="column-title">All Time</h3>
+                                <div class="director-list" id="top-directors-all">
+                                    <!-- Populated by JavaScript -->
+                                </div>
                             </div>
                         </div>
-                        <div class="director-column">
-                            <h3 class="column-title">All Time</h3>
-                            <div class="director-list" id="top-directors-all">
-                                <!-- Populated by JavaScript -->
+                    </section>
+
+                    <!-- Goals Section -->
+                    <section class="goals-card">
+                        <h2 class="card-title">Viewing Goals</h2>
+                        <div class="goal-item">
+                            <div class="goal-header">
+                                <span class="goal-title">Monthly Target</span>
+                                <span class="goal-progress" id="monthly-progress-text">0/10</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="monthly-progress"></div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                        <div class="goal-item">
+                            <div class="goal-header">
+                                <span class="goal-title">Annual Target</span>
+                                <span class="goal-progress" id="yearly-progress-text">0/100</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="yearly-progress"></div>
+                            </div>
+                        </div>
+                    </section>
 
-                <!-- Goals Section -->
-                <section class="goals-card">
-                    <h2 class="card-title">Viewing Goals</h2>
-                    <div class="goal-item">
-                        <div class="goal-header">
-                            <span class="goal-title">Monthly Target</span>
-                            <span class="goal-progress" id="monthly-progress-text">0/10</span>
+                    <!-- Recent Activity -->
+                    <section class="recent-card">
+                        <h2 class="card-title">Recent Activity</h2>
+                        <div class="recent-films" id="recent-movies">
+                            <!-- Populated by JavaScript -->
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="monthly-progress"></div>
-                        </div>
-                    </div>
-                    <div class="goal-item">
-                        <div class="goal-header">
-                            <span class="goal-title">Annual Target</span>
-                            <span class="goal-progress" id="yearly-progress-text">0/100</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="yearly-progress"></div>
-                        </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
+            </div>
 
-                <!-- Recent Activity -->
-                <section class="recent-card">
-                    <h2 class="card-title">Recent Activity</h2>
-                    <div class="recent-films" id="recent-movies">
-                        <!-- Populated by JavaScript -->
-                    </div>
-                </section>
+            <!-- Stats Page -->
+            <div id="stats-page" class="page-content">
+                <div class="page-header">
+                    <h1 class="page-title">Detailed Statistics</h1>
+                </div>
+                <div class="stats-grid">
+                    <section class="stat-detail-card">
+                        <h2 class="card-title">Top Rated Decades</h2>
+                        <div id="decades-list"></div>
+                    </section>
+                    <section class="stat-detail-card">
+                        <h2 class="card-title">Most Watched Genres</h2>
+                        <div id="genres-breakdown"></div>
+                    </section>
+                    <section class="stat-detail-card">
+                        <h2 class="card-title">Countries by Film Count</h2>
+                        <div id="countries-list"></div>
+                    </section>
+                    <section class="stat-detail-card">
+                        <h2 class="card-title">Runtime Analysis</h2>
+                        <div id="runtime-analysis"></div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Lists Page -->
+            <div id="lists-page" class="page-content">
+                <div class="page-header">
+                    <h1 class="page-title">My Film Lists</h1>
+                </div>
+                <div class="lists-grid">
+                    <section class="list-card">
+                        <h2 class="card-title">Top Rated Films</h2>
+                        <div id="top-rated-list"></div>
+                    </section>
+                    <section class="list-card">
+                        <h2 class="card-title">Recent Favorites</h2>
+                        <div id="recent-favorites-list"></div>
+                    </section>
+                    <section class="list-card">
+                        <h2 class="card-title">Films by Genre</h2>
+                        <div id="genre-lists"></div>
+                    </section>
+                </div>
             </div>
         </div>
     </main>

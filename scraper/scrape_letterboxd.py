@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Letterboxd Data Scraper for GitHub Pages Dashboard
-Scrapes user data from Letterboxd and outputs CSV and JSON files
+Enhanced Letterboxd Data Scraper with TMDB Integration
+Scrapes user data from Letterboxd and enhances with director/genre from TMDB
 """
 
 import requests
@@ -16,9 +16,10 @@ import sys
 from urllib.parse import urljoin, urlparse
 import re
 
-class LetterboxdScraper:
-    def __init__(self, username):
+class EnhancedLetterboxdScraper:
+    def __init__(self, username, tmdb_api_key=None):
         self.username = username
+        self.tmdb_api_key = tmdb_api_key
         self.base_url = f"https://letterboxd.com/{username}"
         self.session = requests.Session()
         self.session.headers.update({
@@ -31,14 +32,14 @@ class LetterboxdScraper:
         })
         self.movies_data = []
         self.stats_data = {}
+        self.current_month = None
+        self.current_year = None
 
     def get_page(self, url, max_retries=3):
         """Fetch a page with retry logic and rate limiting"""
         for attempt in range(max_retries):
             try:
-                # Add random delay to avoid rate limiting
                 time.sleep(random.uniform(1, 3))
-                
                 response = self.session.get(url, timeout=10)
                 response.raise_for_status()
                 return response
@@ -54,10 +55,9 @@ class LetterboxdScraper:
             response = self.get_page(self.base_url)
             soup = BeautifulSoup(response.content, 'html.parser')
             
-            # Extract stats from the profile
             stats = {}
             
-            # Films watched
+            # Extract stats from the profile
             films_stat = soup.find('a', href=f'/{self.username}/films/')
             if films_stat:
                 films_text = films_stat.get_text(strip=True)
@@ -65,13 +65,9 @@ class LetterboxdScraper:
                 if films_count:
                     stats['total_films'] = int(films_count[0])
             
-            # This year count
-            current_year = datetime.now().year
-            stats['films_this_year'] = 0  # Will be calculated from diary data
-            
-            # Default values
             stats.update({
                 'total_films': stats.get('total_films', 0),
+                'films_this_year': 0,
                 'average_rating': 0.0,
                 'total_runtime': 0,
                 'last_updated': datetime.now().isoformat()
@@ -90,8 +86,8 @@ class LetterboxdScraper:
                 'last_updated': datetime.now().isoformat()
             }
 
-    def scrape_diary(self, pages=5):
-        """Scrape diary entries from multiple pages"""
+    def scrape_diary(self, pages=10):
+        """Scrape diary entries from multiple pages with enhanced date handling"""
         print(f"Scraping diary entries for {self.username}...")
         
         for page in range(1, pages + 1):
@@ -110,6 +106,10 @@ class LetterboxdScraper:
                 for entry in diary_entries:
                     movie_data = self.extract_movie_from_diary_entry(entry)
                     if movie_data:
+                        # Enhance with TMDB data if API key is provided
+                        if self.tmdb_api_key:
+                            self.enhance_movie_with_tmdb(movie_data)
+                        
                         self.movies_data.append(movie_data)
                 
                 print(f"Scraped {len(diary_entries)} entries from page {page}")
@@ -118,49 +118,40 @@ class LetterboxdScraper:
                 print(f"Error scraping diary page {page}: {e}")
                 continue
 
-    # Place these at the start of your diary scrape method, before you loop:
-    current_month = None
-    current_year = None
-
     def extract_movie_from_diary_entry(self, entry):
-        global current_month, current_year
-
+        """Enhanced extraction with better date handling"""
         try:
-            # === DATE GROUPING HANDLING ===
-            # Calendar cell: update month and year if present
+            # Date handling with state tracking
             cal_cell = entry.find('td', class_='td-calendar')
             if cal_cell:
-                # New month? (e.g. <strong>Feb</strong>)
                 strong = cal_cell.find('strong')
                 if strong:
-                    current_month = strong.text.strip()
-                # New year? (e.g. <small>2025</small>)
+                    self.current_month = strong.text.strip()
                 small = cal_cell.find('small')
                 if small:
-                    current_year = small.text.strip()
+                    self.current_year = small.text.strip()
 
-            # Day cell (always present)
+            # Day cell
             day_cell = entry.find('td', class_='td-day')
             day = day_cell.find('a').text.strip() if day_cell and day_cell.find('a') else None
 
-            # Fallback: don't proceed if any date component is missing
-            if not (day and current_month and current_year):
+            if not (day and self.current_month and self.current_year):
                 return None
 
             # Build ISO date
             try:
-                watch_date = datetime.strptime(f"{day} {current_month} {current_year}", "%d %b %Y").date().isoformat()
+                watch_date = datetime.strptime(f"{day} {self.current_month} {self.current_year}", "%d %b %Y").date().isoformat()
             except Exception:
                 watch_date = ''
 
-            # === TITLE & YEAR ===
+            # Title & Year
             details = entry.find('td', class_='td-film-details')
             title_tag = details.find('h2', class_='name') if details else None
             title = title_tag.get_text(strip=True) if title_tag else ''
             year_tag = details.find('span', class_='releasedate') if details else None
             year = year_tag.find('a').get_text(strip=True) if year_tag and year_tag.find('a') else ''
 
-            # === RATING ===
+            # Rating
             rating = ''
             rating_td = entry.find('td', class_='td-rating')
             if rating_td:
@@ -171,7 +162,6 @@ class LetterboxdScraper:
                             value = int(cls.split("-")[1])
                             rating = str(value / 2.0)
 
-            # === OUTPUT (add director/genre if you want) ===
             if title and watch_date:
                 return {
                     "title": title,
@@ -185,7 +175,57 @@ class LetterboxdScraper:
             print(f"Error extracting diary row: {e}")
 
         return None
-        
+
+    def enhance_movie_with_tmdb(self, movie_data):
+        """Enhance movie data with TMDB information"""
+        if not self.tmdb_api_key:
+            return
+
+        try:
+            # Search for movie
+            search_url = f"https://api.themoviedb.org/3/search/movie"
+            params = {
+                'api_key': self.tmdb_api_key,
+                'query': movie_data['title'],
+                'year': movie_data['year']
+            }
+            
+            response = requests.get(search_url, params=params, timeout=5)
+            data = response.json()
+            
+            if data['results']:
+                movie_id = data['results'][0]['id']
+                
+                # Get detailed movie information
+                details_url = f"https://api.themoviedb.org/3/movie/{movie_id}"
+                params = {
+                    'api_key': self.tmdb_api_key,
+                    'append_to_response': 'credits'
+                }
+                
+                response = requests.get(details_url, params=params, timeout=5)
+                details = response.json()
+                
+                # Extract director
+                if 'credits' in details and 'crew' in details['credits']:
+                    director = next((person['name'] for person in details['credits']['crew'] 
+                                   if person['job'] == 'Director'), '')
+                    if director:
+                        movie_data['director'] = director
+                
+                # Extract genres
+                if 'genres' in details and details['genres']:
+                    genres = [genre['name'] for genre in details['genres']]
+                    movie_data['genre'] = ', '.join(genres)
+                
+                print(f"Enhanced {movie_data['title']} with TMDB data")
+                
+                # Rate limiting for TMDB API
+                time.sleep(0.1)
+                
+        except Exception as e:
+            print(f"Error enhancing {movie_data['title']} with TMDB: {e}")
+
     def calculate_statistics(self):
         """Calculate comprehensive statistics from scraped data"""
         if not self.movies_data:
@@ -216,15 +256,14 @@ class LetterboxdScraper:
                 except (ValueError, IndexError):
                     continue
         
-        # Genre distribution (placeholder - would need additional scraping)
-        genre_dist = {
-            'Drama': len([m for m in self.movies_data if 'drama' in m.get('genre', '').lower()]),
-            'Comedy': len([m for m in self.movies_data if 'comedy' in m.get('genre', '').lower()]),
-            'Action': len([m for m in self.movies_data if 'action' in m.get('genre', '').lower()]),
-            'Thriller': len([m for m in self.movies_data if 'thriller' in m.get('genre', '').lower()]),
-            'Sci-Fi': len([m for m in self.movies_data if 'sci-fi' in m.get('genre', '').lower()]),
-            'Horror': len([m for m in self.movies_data if 'horror' in m.get('genre', '').lower()])
-        }
+        # Genre distribution from scraped data
+        genre_dist = {}
+        for movie in self.movies_data:
+            if movie.get('genre'):
+                genres = [g.strip() for g in movie['genre'].split(',')]
+                for genre in genres:
+                    if genre:
+                        genre_dist[genre] = genre_dist.get(genre, 0) + 1
         
         # Rating distribution
         rating_dist = {'0.5': 0, '1.0': 0, '1.5': 0, '2.0': 0, '2.5': 0, 
@@ -253,7 +292,6 @@ class LetterboxdScraper:
 
     def save_data(self, output_dir='data'):
         """Save scraped data to CSV and JSON files"""
-        # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
         
         # Save movies to CSV
@@ -265,7 +303,6 @@ class LetterboxdScraper:
                 writer.writeheader()
                 
                 for movie in self.movies_data:
-                    # Ensure all required fields exist
                     row = {field: movie.get(field, '') for field in fieldnames}
                     writer.writerow(row)
             
@@ -278,9 +315,9 @@ class LetterboxdScraper:
         
         print(f"Saved statistics to {json_path}")
 
-    def run_scraper(self, pages=5):
+    def run_scraper(self, pages=10):
         """Run the complete scraping process"""
-        print(f"Starting Letterboxd scraper for user: {self.username}")
+        print(f"Starting enhanced Letterboxd scraper for user: {self.username}")
         
         try:
             # Scrape basic user stats
@@ -307,22 +344,27 @@ class LetterboxdScraper:
 
 
 def main():
-    """Main function to run the scraper"""
-    # Get username from environment variable or command line argument
+    """Main function to run the enhanced scraper"""
     username = os.getenv('LETTERBOXD_USERNAME')
+    tmdb_api_key = os.getenv('TMDB_API_KEY')  # Add this to your GitHub Secrets
     
     if not username and len(sys.argv) > 1:
         username = sys.argv[1]
     
     if not username:
         print("Error: Please provide a Letterboxd username")
-        print("Usage: python scrape_letterboxd.py <username>")
+        print("Usage: python enhanced_scraper.py <username>")
         print("Or set LETTERBOXD_USERNAME environment variable")
         sys.exit(1)
     
-    # Create and run scraper
-    scraper = LetterboxdScraper(username)
-    scraper.run_scraper(pages=10)  # Scrape up to 10 pages of diary entries
+    if tmdb_api_key:
+        print("TMDB API key found - will enhance movies with director/genre data")
+    else:
+        print("No TMDB API key found - director/genre data will be limited to what's available")
+    
+    # Create and run enhanced scraper
+    scraper = EnhancedLetterboxdScraper(username, tmdb_api_key)
+    scraper.run_scraper(pages=15)  # Scrape more pages for better data
 
 
 if __name__ == "__main__":

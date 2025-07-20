@@ -1,14 +1,9 @@
-name: Scrape Letterboxd Data
+name: Enhanced Letterboxd Data Scraping
 
 on:
-  # Run daily at 8 AM UTC
   schedule:
-    - cron: '0 8 * * *'
-  
-  # Allow manual triggering
-  workflow_dispatch:
-  
-  # Run on pushes to main branch (for testing)
+    - cron: '0 8 * * *'  # Daily at 8 AM UTC
+  workflow_dispatch:  # Manual trigger
   push:
     branches: [ main ]
 
@@ -17,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     
     permissions:
-      contents: write  # Allow the action to commit changes
+      contents: write
       
     steps:
     - name: Checkout repository
@@ -32,12 +27,13 @@ jobs:
       run: |
         pip install -r scraper/requirements.txt
         
-    - name: Run scraper
+    - name: Run enhanced scraper
       env:
         LETTERBOXD_USERNAME: ${{ secrets.LETTERBOXD_USERNAME }}
+        TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
       run: |
         cd scraper
-        python scrape_letterboxd.py
+        python enhanced_scraper.py
         
     - name: Move data files to correct location
       run: |
@@ -55,10 +51,9 @@ jobs:
         git config --local user.name "GitHub Action"
         git add data/
         
-        # Only commit if there are changes
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
-          git commit -m "Update Letterboxd data - $(date '+%Y-%m-%d %H:%M:%S')"
+          git commit -m "Update Letterboxd data with enhanced scraper - $(date '+%Y-%m-%d %H:%M:%S')"
           git push
         fi
