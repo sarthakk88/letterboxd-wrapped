@@ -184,7 +184,7 @@ body {
 /* Charts Grid */
 .charts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, 1fr);  /* FORCE 2 columns */
     gap: 1rem;
     margin-bottom: 2rem;
 }
@@ -205,7 +205,7 @@ body {
 /* Leaders Grid */
 .leaders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr);  /* Exactly 2 columns */
     gap: 1rem;
     margin-bottom: 2rem;
 }
