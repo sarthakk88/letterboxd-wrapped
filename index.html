@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Letterboxd Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 My Letterboxd Dashboard</h1>
+            <p class="subtitle">Personal Cinema Statistics & Analytics</p>
+            <div class="last-updated">
+                <span id="last-updated-text">Last updated: Loading...</span>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <!-- Overview Statistics -->
+            <section class="overview-stats">
+                <div class="stat-card highlight">
+                    <h3>Movies This Year</h3>
+                    <span class="stat-number" id="movies-this-year">--</span>
+                    <span class="stat-label">films watched</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Movies</h3>
+                    <span class="stat-number" id="total-movies">--</span>
+                    <span class="stat-label">all time</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Average Rating</h3>
+                    <span class="stat-number" id="average-rating">--</span>
+                    <span class="stat-label">out of 5.0</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Runtime</h3>
+                    <span class="stat-number" id="total-runtime">--</span>
+                    <span class="stat-label">days</span>
+                </div>
+            </section>
+
+            <!-- Director Analysis -->
+            <section class="director-section card">
+                <h2>🎭 Director Analysis</h2>
+                <div class="director-grid">
+                    <div class="director-stats">
+                        <h3>Top Directors This Year</h3>
+                        <ul id="top-directors-year" class="director-list">
+                            <!-- Populated by JavaScript -->
+                        </ul>
+                    </div>
+                    <div class="director-stats">
+                        <h3>All-Time Favorites</h3>
+                        <ul id="top-directors-all" class="director-list">
+                            <!-- Populated by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Genre Chart -->
+            <section class="chart-section card">
+                <h2>🎯 Genre Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="genreChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Rating Distribution -->
+            <section class="chart-section card">
+                <h2>⭐ Rating Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="ratingChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Monthly Activity -->
+            <section class="chart-section card wide">
+                <h2>📅 Monthly Viewing Activity</h2>
+                <div class="chart-container">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Goal Tracking -->
+            <section class="goals-section card">
+                <h2>🎯 Viewing Goals</h2>
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <span>Monthly Goal</span>
+                        <span id="monthly-progress-text">0/10</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="monthly-progress"></div>
+                    </div>
+                </div>
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <span>Yearly Goal</span>
+                        <span id="yearly-progress-text">0/100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="yearly-progress"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="recent-section card">
+                <h2>🕒 Recent Activity</h2>
+                <div class="recent-movies" id="recent-movies">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Data sourced from Letterboxd • Updated automatically via GitHub Actions</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
