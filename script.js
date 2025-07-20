@@ -106,8 +106,11 @@ function parseCSV(txt) {
         obj.runtime = Number(obj.runtime) || 0;
         obj.rating = parseFloat(obj.rating) || 0;
 
-        // Parse cast - split by semicolon and filter empty strings
-        obj.cast = obj.cast ? obj.cast.split(';').map(s => s.trim()).filter(Boolean) : [];
+        if ('cast' in obj && obj.cast) {
+            obj.cast = obj.cast.split(';').map(s => s.trim()).filter(Boolean);
+        } else {
+            obj.cast = [];
+        }
 
         return obj;
     });
@@ -525,7 +528,6 @@ function loadTopCast(movies, elementId) {
             });
         }
     });
-
     const topCast = Object.entries(castCount)
         .sort(([,a], [,b]) => b - a)
         .slice(0, 5);
