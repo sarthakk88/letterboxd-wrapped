@@ -518,33 +518,7 @@ function loadTopDirectors(movies, elementId) {
     }
 }
 
-// function loadTopCast(movies, elementId) {
-//     const castCount = {};
-//     movies.forEach(movie => {
-//         if (movie.cast && movie.cast.length > 0) {
-//             movie.cast.forEach(actor => {
-//                 if (actor && actor.trim()) {
-//                     castCount[actor] = (castCount[actor] || 0) + 1;
-//                 }
-//             });
-//         }
-//     });
-//     const topCast = Object.entries(castCount)
-//         .sort(([,a], [,b]) => b - a)
-//         .slice(0, 5);
-
-//     const element = document.getElementById(elementId);
-//     if (element) {
-//         element.innerHTML = topCast.map(([actor, count]) => `
-//             <div class="leader-item">
-//                 <span class="leader-name">${actor}</span>
-//                 <span class="leader-count">(${count})</span>
-//             </div>
-//         `).join('') || '<div class="leader-item"><span class="leader-name">No data available</span></div>';
-//     }
-// }
-
-function loadTopCast() {
+function loadTopCast(movies, elementId) {
     const castCount = {};
 
     filteredMovies.forEach(movie => {
@@ -563,7 +537,7 @@ function loadTopCast() {
         .sort(([,a], [,b]) => b - a)
         .slice(0, 10);
 
-    const element = document.getElementById('castBreakdown');
+    const element = document.getElementById(elementId);
     if (element) {
         element.innerHTML = sortedCast.map(([actor, count]) => `
             <div class="stat-row">
