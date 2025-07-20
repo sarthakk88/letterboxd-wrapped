@@ -2,31 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Film Diary Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Letterboxd Dashboard</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header class="site-header">
     <div class="container">
-      <h1>LETTERBOXD DIARY</h1>
+      <h1 class="site-title">LETTERBOXD</h1>
       <nav class="tabs">
         <button class="tab active" data-tab="diary">Diary</button>
         <button class="tab" data-tab="stats">Stats</button>
         <button class="tab" data-tab="list">List</button>
       </nav>
+      <div id="last-updated" class="last-updated">Loading…</div>
     </div>
   </header>
 
   <main class="container">
     <!-- Diary Tab -->
     <section id="diary" class="tab-content active">
-      <div class="stats-grid">
+      <div class="overview-grid">
         <div class="card"><h3>Films This Year</h3><div id="films-this-year">–</div></div>
         <div class="card"><h3>Films All Time</h3><div id="films-all-time">–</div></div>
         <div class="card"><h3>Average Rating</h3><div id="avg-rating">–</div></div>
-        <div class="card"><h3>Total Watch Time<br>(mins)</h3><div id="total-watch-time">–</div></div>
+        <div class="card"><h3>Total Watch Time<br>(min)</h3><div id="total-watch-time">–</div></div>
       </div>
 
       <div class="charts-grid">
@@ -37,22 +38,15 @@
       </div>
 
       <div class="leaders-grid">
-        <div class="leader-card">
-          <h4>Top Directors This Year</h4><div id="directors-year"></div>
-        </div>
-        <div class="leader-card">
-          <h4>Top Directors All Time</h4><div id="directors-all"></div>
-        </div>
-        <div class="leader-card">
-          <h4>Top Cast This Year</h4><div id="cast-year"></div>
-        </div>
-        <div class="leader-card">
-          <h4>Top Cast All Time</h4><div id="cast-all"></div>
-        </div>
+        <div class="leader-card"><h4>Top Directors (Year)</h4><div id="directors-year"></div></div>
+        <div class="leader-card"><h4>Top Directors (All Time)</h4><div id="directors-all"></div></div>
+        <div class="leader-card"><h4>Top Cast (Year)</h4><div id="cast-year"></div></div>
+        <div class="leader-card"><h4>Top Cast (All Time)</h4><div id="cast-all"></div></div>
       </div>
 
       <div class="recent-activity">
-        <h4>Recent Activity</h4><div id="recent-activity"></div>
+        <h4>Recent Activity</h4>
+        <div id="recent-activity"></div>
       </div>
     </section>
 
@@ -68,8 +62,8 @@
     <!-- List Tab -->
     <section id="list" class="tab-content">
       <div class="stats-grid">
-        <div class="card"><h3>Top Rated (This Year)</h3><div id="top-rated-year"></div></div>
-        <div class="card"><h3>Top Rated (All Time)</h3><div id="top-rated-all"></div></div>
+        <div class="card"><h3>Top Rated Films (Year)</h3><div id="top-rated-year"></div></div>
+        <div class="card"><h3>Top Rated Films (All Time)</h3><div id="top-rated-all"></div></div>
       </div>
     </section>
   </main>
