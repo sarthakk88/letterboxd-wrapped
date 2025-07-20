@@ -10,6 +10,9 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write     
+      
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -41,7 +44,7 @@ jobs:
         if [ -f scraper/data/stats.json ]; then
           mv scraper/data/stats.json data/
         fi
-        
+
     - name: Resolve any rebase conflicts in stats.json
       run: |
         # If during a rebase conflict, accept the incoming stats.json update
