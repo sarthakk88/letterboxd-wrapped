@@ -1,0 +1,52 @@
+{
+  "total_films": 262,
+  "films_this_year": 58,
+  "average_rating": 3.4,
+  "total_runtime": 28820,
+  "last_updated": "2025-07-20T12:14:50.818862",
+  "monthly_data": [
+    4,
+    6,
+    6,
+    10,
+    11,
+    16,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "genre_distribution": {
+    "Drama": 168,
+    "Crime": 29,
+    "Documentary": 7,
+    "History": 9,
+    "Action": 39,
+    "Thriller": 33,
+    "Science Fiction": 22,
+    "Mystery": 9,
+    "Romance": 75,
+    "Comedy": 106,
+    "Family": 20,
+    "Horror": 11,
+    "Adventure": 26,
+    "Animation": 11,
+    "Fantasy": 11,
+    "War": 6,
+    "Music": 2
+  },
+  "rating_distribution": {
+    "0.5": 3,
+    "1.0": 3,
+    "1.5": 9,
+    "2.0": 20,
+    "2.5": 19,
+    "3.0": 66,
+    "3.5": 31,
+    "4.0": 62,
+    "4.5": 24,
+    "5.0": 24
+  }
+}
