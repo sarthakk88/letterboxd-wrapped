@@ -210,7 +210,7 @@ class EnhancedScraper:
                 writer.writerow([
                     m['title'], m['year'], m['director'], m['genre'],
                     m['rating'], m['watch_date'], m['runtime'],
-                    m['country'], ';'.join(m['cast'])
+                    m['country'], m['cast']
                 ])
         # stats.json
         with open('data/stats.json', 'w', encoding='utf-8') as f:
