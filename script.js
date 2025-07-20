@@ -106,12 +106,8 @@ function parseCSV(txt) {
         obj.runtime = Number(obj.runtime) || 0;
         obj.rating = parseFloat(obj.rating) || 0;
 
-        // Cast already stored as comma-separated string directly
-        if (!obj.cast) {
-            obj.cast = '';
-        } else {
-            obj.cast = obj.cast.trim();
-        }
+        // Keep cast as string - don't modify it here
+        obj.cast = obj.cast || '';
         
         return obj;
     });
@@ -519,36 +515,56 @@ function loadTopDirectors(movies, elementId) {
 }
 
 function loadTopCast(movies, elementId) {
+    console.log(`Loading top cast for ${elementId}, movies count: ${movies.length}`);
+    
     const castCount = {};
+    let processedMovies = 0;
+    let moviesWithCast = 0;
 
-    movies.forEach(movie => {
+    movies.forEach((movie, index) => {
         const cast = movie.cast;
+        console.log(`Movie ${index + 1} (${movie.title}): cast = "${cast}"`);
 
         if (typeof cast === 'string' && cast.trim() && cast.trim() !== '[]') {
-            const actors = cast.split(',').map(actor => actor.trim());
+            // Split by comma and clean up each actor name
+            const actors = cast.split(',')
+                .map(actor => actor.trim())
+                .filter(actor => actor && actor !== '[]' && actor !== '');
 
-            actors.forEach(actor => {
-                if (actor && actor !== '[]') {
+            if (actors.length > 0) {
+                moviesWithCast++;
+                actors.forEach(actor => {
                     castCount[actor] = (castCount[actor] || 0) + 1;
-                }
-            });
+                    console.log(`Added actor: "${actor}" (count: ${castCount[actor]})`);
+                });
+            }
         }
+        processedMovies++;
     });
+
+    console.log(`Processed ${processedMovies} movies, ${moviesWithCast} had cast data`);
+    console.log('Cast count object:', castCount);
 
     const sortedCast = Object.entries(castCount)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 10);
 
+    console.log('Top cast:', sortedCast);
+
     const element = document.getElementById(elementId);
     if (element) {
-        element.innerHTML = sortedCast.length
-            ? sortedCast.map(([actor, count]) => `
-                <div class="stat-row">
-                    <span class="stat-label">${actor}</span>
-                    <span class="stat-value-small">${count}</span>
+        if (sortedCast.length > 0) {
+            element.innerHTML = sortedCast.map(([actor, count]) => `
+                <div class="leader-item">
+                    <span class="leader-name">${actor}</span>
+                    <span class="leader-count">(${count})</span>
                 </div>
-            `).join('')
-            : '<div class="stat-row"><span class="stat-label">No data available</span></div>';
+            `).join('');
+        } else {
+            element.innerHTML = '<div class="leader-item"><span class="leader-name">No cast data available</span></div>';
+        }
+    } else {
+        console.error(`Element with id "${elementId}" not found`);
     }
 }
 
