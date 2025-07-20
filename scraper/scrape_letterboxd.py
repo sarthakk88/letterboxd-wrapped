@@ -219,7 +219,7 @@ class EnhancedScraper:
         self.save()
 
 if __name__ == "__main__":
-    username = os.getenv('LETTERBOXD_USERNAME') or (sys.argv[1] if len(sys.argv) > 1 else '')
+    username = os.getenv('LETTERBOXD_USERNAME', 'sarthkk88') or (sys.argv[1] if len(sys.argv) > 1 else 'sarthkk88')
     if not username:
         print("Error: Provide Letterboxd username via env LETTERBOXD_USERNAME or as argument.")
         sys.exit(1)

@@ -1,72 +1,128 @@
-# Letterboxd Wrapped
+# Letterboxd Dashboard Tracker
 
-A beautiful, automated dashboard that tracks your Letterboxd movie-watching statistics using GitHub Pages and GitHub Actions.
+A beautiful, Letterboxd-inspired dashboard that scrapes your Letterboxd diary and displays comprehensive movie statistics with interactive visualizations.
 
-## 🌟 Features
+## 🎬 Features
 
-- **Automated Data Collection**: Scrapes your Letterboxd data daily using GitHub Actions
-- **Beautiful Dashboard**: Responsive web interface with interactive charts
-- **Comprehensive Statistics**: 
-  - Movies watched this year vs all-time
-  - Average ratings and total runtime
-  - Director analysis and favorite filmmakers
-  - Genre distribution with visual charts
-  - Monthly viewing patterns
-  - Goal tracking with progress bars
+### Dashboard Tabs
+- **Diary**: Your complete movie watching statistics
+  - Films watched this year vs all time
+  - Average rating and total watch time
+  - Genre and rating distribution charts
+  - Monthly activity tracking
+  - Top directors and cast members
+  - Recent activity feed
 
-## 🚀 Quick Setup
+- **Stats**: Deep dive analytics  
+  - Top rated decades analysis
+  - Comprehensive genre breakdown
+  - Country distribution statistics
 
-### 1. Fork this Repository
+- **List**: Movie rankings and ratings
+  - Top rated films (all time & this year)
+  - Sortable by rating and date
 
-Click the "Fork" button to create your own copy of this dashboard.
+### 🎨 Design
+- Authentic Letterboxd visual styling
+- Dark theme with signature green accents (#00d735)
+- Responsive grid layouts
+- Interactive Chart.js visualizations
+- Smooth animations and transitions
 
-### 2. Configure GitHub Secrets
+## 🚀 Quick Start
 
-In your repository settings, go to "Secrets and variables" > "Actions" and add:
+### Option 1: Local Setup
+1. Clone this repository
+2. Open `index.html` in your browser
+3. The dashboard will load with sample data
 
-- `LETTERBOXD_USERNAME`: Your Letterboxd username (without @)
+### Option 2: GitHub Pages Deployment
+1. Fork this repository
+2. Enable GitHub Pages in repository settings
+3. Set up GitHub Secrets for automatic data updates:
+   - `LETTERBOXD_USERNAME`: Your Letterboxd username
+   - `TMDB_API_KEY`: Your TMDb API key (optional, for enhanced data)
 
-### 3. Enable GitHub Pages
+## 📊 Data Sources
 
-1. Go to repository "Settings"
-2. Scroll to "Pages" section
-3. Set source to "Deploy from a branch"
-4. Choose "main" branch
-5. Click "Save"
+The dashboard uses two main data files:
+- `data/movies.csv`: Individual movie entries with ratings, dates, genres, etc.
+- `data/stats.json`: Aggregate statistics and metadata
 
-Your dashboard will be available at: `https://yourusername.github.io/repository-name`
+## 🤖 Automated Data Updates
 
-### 4. Enable Actions
+The included GitHub Actions workflow (`scrape.yml`) automatically:
+- Scrapes your latest Letterboxd diary entries daily
+- Enriches movie data with TMDb information
+- Updates the dashboard data files
+- Commits changes back to your repository
 
-1. Go to the "Actions" tab
-2. Click "I understand my workflows, go ahead and enable them"
-3. The scraper will run automatically daily at 8 AM UTC
+## 🛠️ Technology Stack
 
-## 📊 Dashboard Features
+- **Frontend**: Pure HTML5, CSS3, JavaScript (ES6+)
+- **Charts**: Chart.js for beautiful data visualizations  
+- **Scraping**: Python with BeautifulSoup4 and requests
+- **Data Enhancement**: TMDb API integration
+- **Automation**: GitHub Actions for scheduled updates
+- **Deployment**: GitHub Pages ready
 
-### Overview Statistics
-- Movies watched this year (highlighted)
-- Total movies all-time
-- Average rating across all films  
-- Total runtime converted to days
+## 📁 Project Structure
 
-### Visual Analytics
-- **Genre Distribution**: Interactive doughnut chart showing your viewing preferences
-- **Rating Distribution**: Bar chart of how you rate movies
-- **Monthly Activity**: Line chart tracking viewing patterns throughout the year
+```
+letterboxd-tracker/
+├── 📄 index.html          # Main dashboard page
+├── 📄 styles.css          # Styling for the website  
+├── 📄 script.js           # JavaScript for interactivity
+├── 📄 README.md           # Project documentation
+├── 📁 data/               # Data storage
+│   ├── movies.csv         # Movie data from scraping
+│   └── stats.json         # Calculated statistics
+├── 📁 scraper/            # Python scraping tools
+│   ├── scrape_letterboxd.py
+│   └── requirements.txt
+└── 📁 .github/workflows/  # Automation
+    └── scrape.yml         # GitHub Actions workflow
+```
 
-### Director Analysis
-- Most-watched directors this year
-- All-time favorite directors with movie counts
+## 🔧 Configuration
 
-### Goal Tracking
-- Monthly viewing goals with progress bars
-- Yearly targets with visual indicators
-- Customizable targets (edit in `script.js`)
+### Setting up TMDb API (Optional)
+1. Create a free account at [TMDb](https://www.themoviedb.org/)
+2. Get your API key from account settings
+3. Add it as `TMDB_API_KEY` in GitHub Secrets or environment variables
 
-## 🛠️ Customization
+### Customization
+- Modify `styles.css` to change colors and layout
+- Edit `script.js` to add new chart types or statistics
+- Update `scrape_letterboxd.py` to scrape additional data fields
 
-### Adjust Viewing Goals
+## 🐛 Troubleshooting
 
-Edit the goals in `script.js`:
+### Data Not Loading
+- Ensure `movies.csv` and `stats.json` are in the `data/` folder
+- Check browser console for fetch errors
+- Verify file paths are correct for your hosting setup
 
+### Charts Not Displaying  
+- Charts require data to render - check that CSV parsing is working
+- Ensure Chart.js CDN is loading properly
+- Check for JavaScript errors in browser console
+
+### GitHub Actions Issues
+- Verify repository secrets are set correctly
+- Check Actions tab for workflow execution logs
+- Ensure write permissions are enabled for the workflow
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+## 🙏 Acknowledgments
+
+- Inspired by [Letterboxd](https://letterboxd.com)'s beautiful interface
+- Movie data enhanced by [The Movie Database (TMDb)](https://www.themoviedb.org/)
+- Charts powered by [Chart.js](https://www.chartjs.org/)
+
+---
+
+**Note**: This is an unofficial tool and is not affiliated with Letterboxd. Please respect Letterboxd's terms of service when using the scraper.
