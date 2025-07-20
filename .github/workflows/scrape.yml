@@ -1,0 +1,64 @@
+name: Scrape Letterboxd Data
+
+on:
+  # Run daily at 8 AM UTC
+  schedule:
+    - cron: '0 8 * * *'
+  
+  # Allow manual triggering
+  workflow_dispatch:
+  
+  # Run on pushes to main branch (for testing)
+  push:
+    branches: [ main ]
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write  # Allow the action to commit changes
+      
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        pip install -r scraper/requirements.txt
+        
+    - name: Run scraper
+      env:
+        LETTERBOXD_USERNAME: ${{ secrets.LETTERBOXD_USERNAME }}
+      run: |
+        cd scraper
+        python scrape_letterboxd.py
+        
+    - name: Move data files to correct location
+      run: |
+        mkdir -p data
+        if [ -f scraper/data/movies.csv ]; then
+          mv scraper/data/movies.csv data/
+        fi
+        if [ -f scraper/data/stats.json ]; then
+          mv scraper/data/stats.json data/
+        fi
+        
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/
+        
+        # Only commit if there are changes
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update Letterboxd data - $(date '+%Y-%m-%d %H:%M:%S')"
+          git push
+        fi
