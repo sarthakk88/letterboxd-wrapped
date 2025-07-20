@@ -1,135 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film Diary Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Graphik:wght@400;500;600;700&family=TiemposTextWeb:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Film Diary Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header class="site-header">
-        <div class="container">
-            <h1 class="site-title">LETTERBOXD</h1>
-            <nav class="main-nav">
-                <span class="nav-item active" data-page="diary">Diary</span>
-                <span class="nav-item" data-page="stats">Stats</span>
-                <span class="nav-item" data-page="lists">Lists</span>
-            </nav>
-            <div id="last-updated">Loading…</div>
+  <header class="site-header">
+    <div class="container">
+      <h1>LETTERBOXD DIARY</h1>
+      <nav class="tabs">
+        <button class="tab active" data-tab="diary">Diary</button>
+        <button class="tab" data-tab="stats">Stats</button>
+        <button class="tab" data-tab="list">List</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Diary Tab -->
+    <section id="diary" class="tab-content active">
+      <div class="stats-grid">
+        <div class="card"><h3>Films This Year</h3><div id="films-this-year">–</div></div>
+        <div class="card"><h3>Films All Time</h3><div id="films-all-time">–</div></div>
+        <div class="card"><h3>Average Rating</h3><div id="avg-rating">–</div></div>
+        <div class="card"><h3>Total Watch Time<br>(mins)</h3><div id="total-watch-time">–</div></div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card"><h4>Genre Distribution</h4><canvas id="genreChart"></canvas></div>
+        <div class="chart-card"><h4>Rating Distribution</h4><canvas id="ratingChart"></canvas></div>
+        <div class="chart-card"><h4>Monthly # Watched</h4><canvas id="monthlyCountChart"></canvas></div>
+        <div class="chart-card"><h4>Monthly Minutes Watched</h4><canvas id="monthlyMinutesChart"></canvas></div>
+      </div>
+
+      <div class="leaders-grid">
+        <div class="leader-card">
+          <h4>Top Directors This Year</h4><div id="directors-year"></div>
         </div>
-    </header>
+        <div class="leader-card">
+          <h4>Top Directors All Time</h4><div id="directors-all"></div>
+        </div>
+        <div class="leader-card">
+          <h4>Top Cast This Year</h4><div id="cast-year"></div>
+        </div>
+        <div class="leader-card">
+          <h4>Top Cast All Time</h4><div id="cast-all"></div>
+        </div>
+      </div>
 
-    <main class="container">
-        <!-- Date Filter -->
-        <section class="filter">
-            <input type="date" id="startDate">
-            <span>to</span>
-            <input type="date" id="endDate">
-            <button id="applyFilter">Apply</button>
-            <button id="clearFilter">Clear</button>
-            <div id="filterStatus"></div>
-        </section>
+      <div class="recent-activity">
+        <h4>Recent Activity</h4><div id="recent-activity"></div>
+      </div>
+    </section>
 
-        <!-- Diary Page -->
-        <section id="diary-page" class="page-content active">
-            <div class="stats-overview">
-                <div class="stat-card primary">
-                    <div class="stat-value" id="movies-this-year">–</div>
-                    <small class="stat-label">Films This Year</small>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="total-movies">–</div>
-                    <small class="stat-label">Total Films</small>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="average-rating">–</div>
-                    <small class="stat-label">Avg Rating</small>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="total-runtime">–</div>
-                    <small class="stat-label">Total Runtime (min)</small>
-                </div>
-            </div>
+    <!-- Stats Tab -->
+    <section id="stats" class="tab-content">
+      <div class="stats-grid">
+        <div class="card"><h3>Top Rated Decades</h3><div id="decades-list"></div></div>
+        <div class="card"><h3>Genre Breakdown</h3><div id="genre-breakdown"></div></div>
+        <div class="card"><h3>Country Count</h3><div id="country-count"></div></div>
+      </div>
+    </section>
 
-            <div class="charts">
-                <div class="chart-card">
-                    <h2>Genre Distribution</h2>
-                    <canvas id="genreChart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <h2>Rating Distribution</h2>
-                    <canvas id="ratingChart"></canvas>
-                </div>
-                <div class="chart-card wide">
-                    <h2>Monthly Activity</h2>
-                    <canvas id="monthlyChart"></canvas>
-                </div>
-            </div>
+    <!-- List Tab -->
+    <section id="list" class="tab-content">
+      <div class="stats-grid">
+        <div class="card"><h3>Top Rated (This Year)</h3><div id="top-rated-year"></div></div>
+        <div class="card"><h3>Top Rated (All Time)</h3><div id="top-rated-all"></div></div>
+      </div>
+    </section>
+  </main>
 
-            <div class="directors">
-                <div>
-                    <h3>Top Directors (Year)</h3>
-                    <div id="top-directors-year"></div>
-                </div>
-                <div>
-                    <h3>Top Directors (All)</h3>
-                    <div id="top-directors-all"></div>
-                </div>
-            </div>
-
-            <div class="recent">
-                <h3>Recent Activity</h3>
-                <div id="recent-movies"></div>
-            </div>
-        </section>
-
-        <!-- Stats Page -->
-        <section id="stats-page" class="page-content">
-            <div class="stats-grid">
-                <div class="stat-detail-card">
-                    <h2>Top Rated Decades</h2>
-                    <div id="decades-list"></div>
-                </div>
-                <div class="stat-detail-card">
-                    <h2>Genre Breakdown</h2>
-                    <div id="genres-breakdown"></div>
-                </div>
-                <div class="stat-detail-card">
-                    <h2>Country Counts</h2>
-                    <div id="countries-list"></div>
-                </div>
-                <div class="stat-detail-card">
-                    <h2>Runtime Analysis</h2>
-                    <div id="runtime-analysis"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Lists Page -->
-        <section id="lists-page" class="page-content">
-            <div class="lists-grid">
-                <div class="list-card">
-                    <h2>Top Rated Films</h2>
-                    <div id="top-rated-list"></div>
-                </div>
-                <div class="list-card">
-                    <h2>Recent Favorites</h2>
-                    <div id="recent-favorites-list"></div>
-                </div>
-                <div class="list-card">
-                    <h2>Films by Genre</h2>
-                    <div id="genre-lists"></div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="site-footer">
-        <p>Data sourced from Letterboxd & TMDb • Updated automatically</p>
-    </footer>
-
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
