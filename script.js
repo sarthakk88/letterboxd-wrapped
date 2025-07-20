@@ -552,12 +552,16 @@ function loadTopCast(movies, elementId) {
 
     const element = document.getElementById(elementId);
     if (element) {
-        element.innerHTML = topCast.map(([actor, count]) => `
-            <div class="leader-item">
-                <span class="leader-name">${actor}</span>
-                <span class="leader-count">(${count})</span>
-            </div>
-        `).join('') || '<div class="leader-item"><span class="leader-name">No data available</span></div>';
+        if (topCast.length > 0) {
+            element.innerHTML = topCast.map(([actor, count]) => `
+                <div class="leader-item">
+                    <span class="leader-name">${actor}</span>
+                    <span class="leader-count">(${count})</span>
+                </div>
+            `).join('');
+        } else {
+            element.innerHTML = '<div class="leader-item"><span class="leader-name">No data available</span></div>';
+        }
     }
 }
 
