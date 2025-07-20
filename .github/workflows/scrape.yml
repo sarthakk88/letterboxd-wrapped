@@ -36,7 +36,7 @@ jobs:
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         run: |
           cd scraper
-          python scrape_letterboxd.py
+          python enhanced_scraper.py
 
       - name: Move data files to correct location
         run: |
