@@ -37,9 +37,11 @@ class LetterboxdDashboard {
                     movies: this.parseCSV(csvText),
                     stats: stats
                 };
+                console.log('Loaded data:', this.data);
             } else {
                 // Use sample data if files don't exist
                 this.data = this.getSampleData();
+                console.log('Using sample data');
             }
         } catch (error) {
             console.error('Error loading data:', error);
@@ -48,22 +50,58 @@ class LetterboxdDashboard {
     }
 
     parseCSV(csvText) {
-        const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',');
-        const movies = [];
+        try {
+            const lines = csvText.trim().split('\n');
+            if (lines.length === 0) return [];
+            
+            const headers = lines[0].split(',').map(h => h.trim());
+            const movies = [];
 
-        for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',');
-            const movie = {};
-            
-            headers.forEach((header, index) => {
-                movie[header.trim()] = values[index] ? values[index].trim() : '';
-            });
-            
-            movies.push(movie);
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                const values = this.parseCSVLine(lines[i]);
+                if (values.length === 0) continue;
+                
+                const movie = {};
+                headers.forEach((header, index) => {
+                    movie[header] = values[index] ? values[index].trim().replace(/^"|"$/g, '') : '';
+                });
+                
+                // Only add if we have essential data
+                if (movie.title && movie.watch_date) {
+                    movies.push(movie);
+                }
+            }
+
+            console.log(`Parsed ${movies.length} movies from CSV`);
+            return movies;
+        } catch (error) {
+            console.error('Error parsing CSV:', error);
+            return [];
         }
+    }
 
-        return movies;
+    parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        result.push(current);
+        return result;
     }
 
     getSampleData() {
@@ -78,7 +116,7 @@ class LetterboxdDashboard {
                     director: 'The Wachowskis',
                     genre: 'Sci-Fi',
                     rating: '4.5',
-                    watchDate: `${currentYear}-03-15`
+                    watch_date: `${currentYear}-03-15`
                 },
                 {
                     title: 'Pulp Fiction',
@@ -86,7 +124,7 @@ class LetterboxdDashboard {
                     director: 'Quentin Tarantino',
                     genre: 'Crime',
                     rating: '4.8',
-                    watchDate: `${currentYear}-04-22`
+                    watch_date: `${currentYear}-04-22`
                 },
                 {
                     title: 'Inception',
@@ -94,15 +132,16 @@ class LetterboxdDashboard {
                     director: 'Christopher Nolan',
                     genre: 'Sci-Fi',
                     rating: '4.6',
-                    watchDate: `${currentYear}-05-10`
+                    watch_date: `${currentYear}-05-10`
                 }
             ],
             stats: {
-                totalMovies: 342,
-                totalRuntime: 28456,
-                averageRating: 3.8,
-                monthlyData: months.map(month => Math.floor(Math.random() * 20) + 5),
-                genreDistribution: {
+                total_films: 342,
+                films_this_year: 58,
+                total_runtime: 28456,
+                average_rating: 3.8,
+                monthly_data: [4, 6, 6, 10, 11, 16, 5, 8, 12, 9, 7, 3],
+                genre_distribution: {
                     'Drama': 45,
                     'Comedy': 32,
                     'Action': 28,
@@ -110,7 +149,7 @@ class LetterboxdDashboard {
                     'Sci-Fi': 18,
                     'Horror': 15
                 },
-                ratingDistribution: {
+                rating_distribution: {
                     '0.5': 2,
                     '1.0': 5,
                     '1.5': 8,
@@ -122,7 +161,7 @@ class LetterboxdDashboard {
                     '4.5': 65,
                     '5.0': 32
                 },
-                lastUpdated: new Date().toISOString()
+                last_updated: new Date().toISOString()
             }
         };
     }
@@ -130,16 +169,16 @@ class LetterboxdDashboard {
     updateStats() {
         const currentYear = new Date().getFullYear();
         const currentYearMovies = this.data.movies.filter(movie => 
-            movie.watchDate && movie.watchDate.startsWith(currentYear.toString())
+            movie.watch_date && movie.watch_date.startsWith(currentYear.toString())
         );
 
         // Update main stats
-        document.getElementById('movies-this-year').textContent = currentYearMovies.length;
-        document.getElementById('total-movies').textContent = this.data.stats.totalMovies;
-        document.getElementById('average-rating').textContent = this.data.stats.averageRating.toFixed(1);
+        document.getElementById('movies-this-year').textContent = this.data.stats.films_this_year || currentYearMovies.length;
+        document.getElementById('total-movies').textContent = this.data.stats.total_films;
+        document.getElementById('average-rating').textContent = this.data.stats.average_rating.toFixed(1);
         
         // Convert runtime to days
-        const days = Math.floor(this.data.stats.totalRuntime / (24 * 60));
+        const days = Math.floor(this.data.stats.total_runtime / (24 * 60));
         document.getElementById('total-runtime').textContent = days;
     }
 
@@ -147,7 +186,7 @@ class LetterboxdDashboard {
         // Count directors for current year
         const currentYear = new Date().getFullYear();
         const currentYearMovies = this.data.movies.filter(movie => 
-            movie.watchDate && movie.watchDate.startsWith(currentYear.toString())
+            movie.watch_date && movie.watch_date.startsWith(currentYear.toString())
         );
 
         const directorCounts = {};
@@ -155,14 +194,14 @@ class LetterboxdDashboard {
 
         // Count current year directors
         currentYearMovies.forEach(movie => {
-            if (movie.director) {
+            if (movie.director && movie.director.trim()) {
                 directorCounts[movie.director] = (directorCounts[movie.director] || 0) + 1;
             }
         });
 
         // Count all directors
         this.data.movies.forEach(movie => {
-            if (movie.director) {
+            if (movie.director && movie.director.trim()) {
                 allDirectorCounts[movie.director] = (allDirectorCounts[movie.director] || 0) + 1;
             }
         });
@@ -178,11 +217,17 @@ class LetterboxdDashboard {
             .slice(0, limit);
 
         const list = document.getElementById(elementId);
+        
+        if (sorted.length === 0) {
+            list.innerHTML = '<div class="director-item"><span class="director-name">No data available</span></div>';
+            return;
+        }
+
         list.innerHTML = sorted.map(([director, count]) => `
-            <li>
-                <span class="director-name">${director}</span>
+            <div class="director-item">
+                <span class="director-name">${this.escapeHtml(director)}</span>
                 <span class="director-count">${count}</span>
-            </li>
+            </div>
         `).join('');
     }
 
@@ -194,7 +239,17 @@ class LetterboxdDashboard {
 
     createGenreChart() {
         const ctx = document.getElementById('genreChart').getContext('2d');
-        const genres = this.data.stats.genreDistribution;
+        const genres = this.data.stats.genre_distribution;
+        const hasData = Object.values(genres).some(value => value > 0);
+
+        if (!hasData) {
+            // Show placeholder for no genre data
+            ctx.font = '14px Graphik';
+            ctx.fillStyle = '#9ab';
+            ctx.textAlign = 'center';
+            ctx.fillText('Genre data not available', ctx.canvas.width / 2, ctx.canvas.height / 2);
+            return;
+        }
 
         this.charts.genreChart = new Chart(ctx, {
             type: 'doughnut',
@@ -203,14 +258,15 @@ class LetterboxdDashboard {
                 datasets: [{
                     data: Object.values(genres),
                     backgroundColor: [
-                        '#667eea',
-                        '#764ba2',
-                        '#f093fb',
-                        '#f5576c',
-                        '#4facfe',
-                        '#00f2fe'
+                        '#00d735',
+                        '#4ade80',
+                        '#22c55e',
+                        '#16a34a',
+                        '#15803d',
+                        '#166534'
                     ],
-                    borderWidth: 0
+                    borderWidth: 2,
+                    borderColor: '#1f2937'
                 }]
             },
             options: {
@@ -220,10 +276,12 @@ class LetterboxdDashboard {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 20,
+                            color: '#9ab',
                             font: {
+                                family: 'Graphik',
                                 size: 12
-                            }
+                            },
+                            padding: 15
                         }
                     }
                 }
@@ -233,17 +291,18 @@ class LetterboxdDashboard {
 
     createRatingChart() {
         const ctx = document.getElementById('ratingChart').getContext('2d');
-        const ratings = this.data.stats.ratingDistribution;
+        const ratings = this.data.stats.rating_distribution;
 
         this.charts.ratingChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: Object.keys(ratings),
                 datasets: [{
-                    label: 'Number of Movies',
+                    label: 'Number of Films',
                     data: Object.values(ratings),
-                    backgroundColor: '#667eea',
-                    borderRadius: 4
+                    backgroundColor: '#00d735',
+                    borderRadius: 4,
+                    borderSkipped: false,
                 }]
             },
             options: {
@@ -258,13 +317,27 @@ class LetterboxdDashboard {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 10
+                            stepSize: 5,
+                            color: '#9ab',
+                            font: {
+                                family: 'Graphik',
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            color: '#445566'
                         }
                     },
                     x: {
-                        title: {
-                            display: true,
-                            text: 'Rating'
+                        ticks: {
+                            color: '#9ab',
+                            font: {
+                                family: 'Graphik',
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            color: '#445566'
                         }
                     }
                 }
@@ -281,12 +354,16 @@ class LetterboxdDashboard {
             data: {
                 labels: months,
                 datasets: [{
-                    label: 'Movies Watched',
-                    data: this.data.stats.monthlyData,
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    label: 'Films Watched',
+                    data: this.data.stats.monthly_data,
+                    borderColor: '#00d735',
+                    backgroundColor: 'rgba(0, 215, 53, 0.1)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointBackgroundColor: '#00d735',
+                    pointBorderColor: '#1f2937',
+                    pointBorderWidth: 2,
+                    pointRadius: 4
                 }]
             },
             options: {
@@ -301,7 +378,27 @@ class LetterboxdDashboard {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 5
+                            stepSize: 2,
+                            color: '#9ab',
+                            font: {
+                                family: 'Graphik',
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            color: '#445566'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#9ab',
+                            font: {
+                                family: 'Graphik',
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            color: '#445566'
                         }
                     }
                 }
@@ -315,17 +412,14 @@ class LetterboxdDashboard {
         
         // Current month movies
         const currentMonthMovies = this.data.movies.filter(movie => {
-            if (!movie.watchDate) return false;
-            const watchDate = new Date(movie.watchDate);
+            if (!movie.watch_date) return false;
+            const watchDate = new Date(movie.watch_date);
             return watchDate.getMonth() === currentMonth && 
                    watchDate.getFullYear() === currentYear;
         }).length;
 
         // Current year movies
-        const currentYearMovies = this.data.movies.filter(movie => {
-            if (!movie.watchDate) return false;
-            return movie.watchDate.startsWith(currentYear.toString());
-        }).length;
+        const currentYearMovies = this.data.stats.films_this_year || 0;
 
         // Monthly goal (example: 10 movies per month)
         const monthlyGoal = 10;
@@ -342,43 +436,72 @@ class LetterboxdDashboard {
 
     updateRecentActivity() {
         const recentMovies = this.data.movies
-            .filter(movie => movie.watchDate)
-            .sort((a, b) => new Date(b.watchDate) - new Date(a.watchDate))
-            .slice(0, 5);
+            .filter(movie => movie.watch_date)
+            .sort((a, b) => new Date(b.watch_date) - new Date(a.watch_date))
+            .slice(0, 8);
 
         const container = document.getElementById('recent-movies');
-        container.innerHTML = recentMovies.map(movie => `
-            <div class="recent-movie">
-                <div class="movie-poster">🎬</div>
-                <div class="movie-info">
-                    <h4>${movie.title} (${movie.year})</h4>
-                    <p>Rating: ${'⭐'.repeat(Math.floor(parseFloat(movie.rating || 0)))} • ${this.formatDate(movie.watchDate)}</p>
+        
+        if (recentMovies.length === 0) {
+            container.innerHTML = '<div class="recent-film"><span>No recent activity</span></div>';
+            return;
+        }
+
+        container.innerHTML = recentMovies.map(movie => {
+            const rating = parseFloat(movie.rating) || 0;
+            const stars = '★'.repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? '½' : '');
+            
+            return `
+                <div class="recent-film">
+                    <div class="film-poster">
+                        <span>📽</span>
+                    </div>
+                    <div class="film-info">
+                        <div class="film-title">${this.escapeHtml(movie.title)} (${movie.year})</div>
+                        <div class="film-meta">
+                            ${rating > 0 ? `<span class="rating-stars">${stars}</span>` : ''}
+                            ${this.formatDate(movie.watch_date)}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     updateLastUpdated() {
-        const lastUpdated = new Date(this.data.stats.lastUpdated);
+        const lastUpdated = new Date(this.data.stats.last_updated);
         document.getElementById('last-updated-text').textContent = 
             `Last updated: ${this.formatDate(lastUpdated.toISOString().split('T')[0])}`;
     }
 
     formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        } catch (error) {
+            return dateString;
+        }
+    }
+
+    escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
     showError() {
         const container = document.querySelector('.dashboard-grid');
         container.innerHTML = `
-            <div class="card" style="grid-column: span 2; text-align: center; padding: 40px;">
-                <h2>⚠️ Unable to Load Data</h2>
-                <p>There was an error loading your Letterboxd data. Please check that your data files are properly configured.</p>
+            <div class="error-card">
+                <h2>Unable to Load Data</h2>
+                <p>There was an error loading your Letterboxd data. Please check that your data files are properly configured and try refreshing the page.</p>
             </div>
         `;
     }
@@ -389,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new LetterboxdDashboard();
 });
 
-// Auto-refresh every 5 minutes
+// Auto-refresh every 10 minutes
 setInterval(() => {
-    location.reload();
-}, 300000);
+    window.location.reload();
+}, 600000);
