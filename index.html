@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Letterboxd Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Letterboxd Dashboard</title>
+<link rel="stylesheet" href="styles.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header class="site-header">
@@ -21,37 +21,47 @@
   </header>
 
   <main class="container">
-    <!-- Diary Tab -->
+    <!-- Date filter always visible -->
+    <section class="filter">
+      <input type="date" id="startDate" />
+      <span>to</span>
+      <input type="date" id="endDate" />
+      <button id="applyFilter">Apply</button>
+      <button id="clearFilter">Clear</button>
+      <div id="filterStatus"></div>
+    </section>
+
+    <!-- Diary tab -->
     <section id="diary" class="tab-content active">
-      <div class="overview-grid">
+      <div class="overview-grid fade-in">
         <div class="card"><h3>Films This Year</h3><div id="films-this-year">–</div></div>
         <div class="card"><h3>Films All Time</h3><div id="films-all-time">–</div></div>
         <div class="card"><h3>Average Rating</h3><div id="avg-rating">–</div></div>
-        <div class="card"><h3>Total Watch Time<br>(min)</h3><div id="total-watch-time">–</div></div>
+        <div class="card"><h3>Total Watch Time (min)</h3><div id="total-watch-time">–</div></div>
       </div>
 
-      <div class="charts-grid">
+      <div class="charts-grid fade-in">
         <div class="chart-card"><h4>Genre Distribution</h4><canvas id="genreChart"></canvas></div>
         <div class="chart-card"><h4>Rating Distribution</h4><canvas id="ratingChart"></canvas></div>
         <div class="chart-card"><h4>Monthly # Watched</h4><canvas id="monthlyCountChart"></canvas></div>
         <div class="chart-card"><h4>Monthly Minutes Watched</h4><canvas id="monthlyMinutesChart"></canvas></div>
       </div>
 
-      <div class="leaders-grid">
+      <div class="leaders-grid fade-in">
         <div class="leader-card"><h4>Top Directors (Year)</h4><div id="directors-year"></div></div>
         <div class="leader-card"><h4>Top Directors (All Time)</h4><div id="directors-all"></div></div>
         <div class="leader-card"><h4>Top Cast (Year)</h4><div id="cast-year"></div></div>
         <div class="leader-card"><h4>Top Cast (All Time)</h4><div id="cast-all"></div></div>
       </div>
 
-      <div class="recent-activity">
+      <div class="recent-activity fade-in">
         <h4>Recent Activity</h4>
         <div id="recent-activity"></div>
       </div>
     </section>
 
-    <!-- Stats Tab -->
-    <section id="stats" class="tab-content">
+    <!-- Stats tab -->
+    <section id="stats" class="tab-content fade-in">
       <div class="stats-grid">
         <div class="card"><h3>Top Rated Decades</h3><div id="decades-list"></div></div>
         <div class="card"><h3>Genre Breakdown</h3><div id="genre-breakdown"></div></div>
@@ -59,15 +69,15 @@
       </div>
     </section>
 
-    <!-- List Tab -->
-    <section id="list" class="tab-content">
+    <!-- List tab -->
+    <section id="list" class="tab-content fade-in">
       <div class="stats-grid">
-        <div class="card"><h3>Top Rated Films (Year)</h3><div id="top-rated-year"></div></div>
+        <div class="card"><h3>Top Rated Films (This Year)</h3><div id="top-rated-year"></div></div>
         <div class="card"><h3>Top Rated Films (All Time)</h3><div id="top-rated-all"></div></div>
       </div>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script src="script.js" type="module"></script>
 </body>
 </html>
