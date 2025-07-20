@@ -516,30 +516,48 @@ function loadTopDirectors(movies, elementId) {
 
 function loadTopCast(movies, elementId) {
     const castCount = {};
-    
+
     movies.forEach(movie => {
-        if (movie.cast && typeof movie.cast === 'string' && movie.cast.trim() && movie.cast !== '[]') {
-            const actors = movie.cast.split(',').map(s => s.trim()).filter(s => s && s !== '[]');
-            actors.forEach(actor => {
-                castCount[actor] = (castCount[actor] || 0) + 1;
+        let cast = movie.cast;
+
+        // Ensure cast is an actual array
+        if (typeof cast === 'string') {
+            try {
+                // Handle bad JSON (single quotes instead of double)
+                const cleaned = cast.replace(/'/g, '"');
+                const parsed = JSON.parse(cleaned);
+
+                if (Array.isArray(parsed)) {
+                    cast = parsed;
+                } else {
+                    cast = [];
+                }
+            } catch (e) {
+                cast = [];
+            }
+        }
+
+        if (Array.isArray(cast) && cast.length > 0) {
+            cast.forEach(actor => {
+                if (actor && actor !== '[]') {
+                    castCount[actor] = (castCount[actor] || 0) + 1;
+                }
             });
         }
     });
 
     const topCast = Object.entries(castCount)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 10);
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 3);
 
     const element = document.getElementById(elementId);
     if (element) {
-        element.innerHTML = topCast.length > 0 
-            ? topCast.map(([actor, count]) => `
-                <div class="leader-item">
-                    <span class="leader-name">${actor}</span>
-                    <span class="leader-count">(${count})</span>
-                </div>
-              `).join('')
-            : '<div class="leader-item"><span class="leader-name">No cast data available</span></div>';
+        element.innerHTML = topCast.map(([actor, count]) => `
+            <div class="leader-item">
+                <span class="leader-name">${actor}</span>
+                <span class="leader-count">(${count})</span>
+            </div>
+        `).join('') || '<div class="leader-item"><span class="leader-name">No data available</span></div>';
     }
 }
 
