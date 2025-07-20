@@ -3,7 +3,7 @@
   "films_this_year": 58,
   "average_rating": 3.4,
   "total_runtime": 28820,
-  "last_updated": "2025-07-20T10:39:20.242630",
+  "last_updated": "2025-07-20T11:19:53.318243",
   "monthly_data": [
     4,
     6,
@@ -18,14 +18,7 @@
     0,
     0
   ],
-  "genre_distribution": {
-    "Drama": 0,
-    "Comedy": 0,
-    "Action": 0,
-    "Thriller": 0,
-    "Sci-Fi": 0,
-    "Horror": 0
-  },
+  "genre_distribution": {},
   "rating_distribution": {
     "0.5": 3,
     "1.0": 3,
