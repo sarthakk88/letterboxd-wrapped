@@ -106,12 +106,13 @@ function parseCSV(txt) {
         obj.runtime = Number(obj.runtime) || 0;
         obj.rating = parseFloat(obj.rating) || 0;
 
-        if ('cast' in obj && obj.cast) {
-            obj.cast = obj.cast.split(';').map(s => s.trim()).filter(Boolean);
+        // Cast already stored as comma-separated string directly
+        if (!obj.cast) {
+            obj.cast = '';
         } else {
-            obj.cast = [];
+            obj.cast = obj.cast.trim();
         }
-
+        
         return obj;
     });
 }
@@ -517,29 +518,59 @@ function loadTopDirectors(movies, elementId) {
     }
 }
 
-function loadTopCast(movies, elementId) {
+// function loadTopCast(movies, elementId) {
+//     const castCount = {};
+//     movies.forEach(movie => {
+//         if (movie.cast && movie.cast.length > 0) {
+//             movie.cast.forEach(actor => {
+//                 if (actor && actor.trim()) {
+//                     castCount[actor] = (castCount[actor] || 0) + 1;
+//                 }
+//             });
+//         }
+//     });
+//     const topCast = Object.entries(castCount)
+//         .sort(([,a], [,b]) => b - a)
+//         .slice(0, 5);
+
+//     const element = document.getElementById(elementId);
+//     if (element) {
+//         element.innerHTML = topCast.map(([actor, count]) => `
+//             <div class="leader-item">
+//                 <span class="leader-name">${actor}</span>
+//                 <span class="leader-count">(${count})</span>
+//             </div>
+//         `).join('') || '<div class="leader-item"><span class="leader-name">No data available</span></div>';
+//     }
+// }
+
+function loadTopCast() {
     const castCount = {};
-    movies.forEach(movie => {
-        if (movie.cast && movie.cast.length > 0) {
-            movie.cast.forEach(actor => {
-                if (actor && actor.trim()) {
+
+    filteredMovies.forEach(movie => {
+        if (movie.cast) {
+            const actors = movie.cast.split(', ');
+            actors.forEach(actor => {
+                actor = actor.trim();
+                if (actor) {
                     castCount[actor] = (castCount[actor] || 0) + 1;
                 }
             });
         }
     });
-    const topCast = Object.entries(castCount)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 5);
 
-    const element = document.getElementById(elementId);
+    const sortedCast = Object.entries(castCount)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 10);
+
+    const element = document.getElementById('castBreakdown');
     if (element) {
-        element.innerHTML = topCast.map(([actor, count]) => `
-            <div class="leader-item">
-                <span class="leader-name">${actor}</span>
-                <span class="leader-count">(${count})</span>
+        element.innerHTML = sortedCast.map(([actor, count]) => `
+            <div class="stat-row">
+                <span class="stat-label">${actor}</span>
+                <span class="stat-value-small">${count}</span>
             </div>
-        `).join('') || '<div class="leader-item"><span class="leader-name">No data available</span></div>';
+        `).join('') || '<div class="stat-row"><span class="stat-label">No data available</span></div>';
     }
 }
 

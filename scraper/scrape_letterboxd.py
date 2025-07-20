@@ -174,7 +174,7 @@ class EnhancedScraper:
                     break
             # Top 3 cast
             cast = details.get('credits', {}).get('cast', [])
-            movie['cast'] = [c['name'] for c in cast[:3]]
+            movie['cast'] = ', '.join(c['name'] for c in cast[:3])
             time.sleep(0.1)
         except Exception:
             pass
