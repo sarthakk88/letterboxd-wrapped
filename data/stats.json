@@ -1,7 +1,41 @@
 {
-  "total_films": 497,
-  "films_this_year": 0,
-  "average_rating": 0.0,
-  "total_runtime": 0,
-  "last_updated": "2025-07-20T08:17:21.652045"
+  "total_films": 262,
+  "films_this_year": 58,
+  "average_rating": 3.4,
+  "total_runtime": 28820,
+  "last_updated": "2025-07-20T10:21:32.440583",
+  "monthly_data": [
+    4,
+    6,
+    6,
+    10,
+    11,
+    16,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "genre_distribution": {
+    "Drama": 0,
+    "Comedy": 0,
+    "Action": 0,
+    "Thriller": 0,
+    "Sci-Fi": 0,
+    "Horror": 0
+  },
+  "rating_distribution": {
+    "0.5": 3,
+    "1.0": 3,
+    "1.5": 9,
+    "2.0": 20,
+    "2.5": 19,
+    "3.0": 66,
+    "3.5": 31,
+    "4.0": 62,
+    "4.5": 24,
+    "5.0": 24
+  }
 }
