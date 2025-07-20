@@ -516,52 +516,36 @@ function loadTopDirectors(movies, elementId) {
 
 function loadTopCast(movies, elementId) {
     const castCount = {};
-
+    
     movies.forEach(movie => {
-        let cast = movie.cast;
+        let castArray = movie.cast;
 
-        // Ensure cast is an actual array
-        if (typeof cast === 'string') {
-            try {
-                // Handle bad JSON (single quotes instead of double)
-                const cleaned = cast.replace(/'/g, '"');
-                const parsed = JSON.parse(cleaned);
-
-                if (Array.isArray(parsed)) {
-                    cast = parsed;
-                } else {
-                    cast = [];
-                }
-            } catch (e) {
-                cast = [];
-            }
+        if (typeof castArray === 'string') {
+            castArray = JSON.parse(castArray.replace(/'/g, '"'));
         }
 
-        if (Array.isArray(cast) && cast.length > 0) {
-            cast.forEach(actor => {
-                if (actor && actor !== '[]') {
+        // Only process if castArray exists and is not empty
+        if (Array.isArray(castArray) && castArray.length > 0) {
+            castArray.forEach(actor => {
+                if (actor) {
                     castCount[actor] = (castCount[actor] || 0) + 1;
                 }
             });
         }
     });
-
+    
     const topCast = Object.entries(castCount)
-        .sort(([, a], [, b]) => b - a)
+        .sort(([,a], [,b]) => b - a)
         .slice(0, 3);
-
+    
     const element = document.getElementById(elementId);
     if (element) {
-        if (topCast.length > 0) {
-            element.innerHTML = topCast.map(([actor, count]) => `
-                <div class="leader-item">
-                    <span class="leader-name">${actor}</span>
-                    <span class="leader-count">(${count})</span>
-                </div>
-            `).join('');
-        } else {
-            element.innerHTML = '<div class="leader-item"><span class="leader-name">No data available</span></div>';
-        }
+        element.innerHTML = topCast.map(([actor, count]) => `
+            <div class="leader-item">
+                <span class="leader-name">${actor}</span>
+                <span class="leader-count">(${count})</span>
+            </div>
+        `).join('');
     }
 }
 
