@@ -521,12 +521,14 @@ function loadTopDirectors(movies, elementId) {
 function loadTopCast(movies, elementId) {
     const castCount = {};
 
-    filteredMovies.forEach(movie => {
-        if (movie.cast) {
-            const actors = movie.cast.split(', ');
+    movies.forEach(movie => {
+        const cast = movie.cast;
+
+        if (typeof cast === 'string' && cast.trim() && cast.trim() !== '[]') {
+            const actors = cast.split(',').map(actor => actor.trim());
+
             actors.forEach(actor => {
-                actor = actor.trim();
-                if (actor) {
+                if (actor && actor !== '[]') {
                     castCount[actor] = (castCount[actor] || 0) + 1;
                 }
             });
@@ -534,17 +536,19 @@ function loadTopCast(movies, elementId) {
     });
 
     const sortedCast = Object.entries(castCount)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([, a], [, b]) => b - a)
         .slice(0, 10);
 
     const element = document.getElementById(elementId);
     if (element) {
-        element.innerHTML = sortedCast.map(([actor, count]) => `
-            <div class="stat-row">
-                <span class="stat-label">${actor}</span>
-                <span class="stat-value-small">${count}</span>
-            </div>
-        `).join('') || '<div class="stat-row"><span class="stat-label">No data available</span></div>';
+        element.innerHTML = sortedCast.length
+            ? sortedCast.map(([actor, count]) => `
+                <div class="stat-row">
+                    <span class="stat-label">${actor}</span>
+                    <span class="stat-value-small">${count}</span>
+                </div>
+            `).join('')
+            : '<div class="stat-row"><span class="stat-label">No data available</span></div>';
     }
 }
 
