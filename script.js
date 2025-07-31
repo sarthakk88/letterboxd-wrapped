@@ -246,8 +246,14 @@ function updateDashboard() {
     const thisYearMovies = filteredMovies.filter(movie => new Date(movie.watch_date).getFullYear() === thisYear);
 
     const totalRuntime = filteredMovies.reduce((sum, movie) => sum + (movie.runtime || 0), 0);
-    const avgRating = filteredMovies.length > 0 ? 
-        (filteredMovies.reduce((sum, movie) => sum + parseFloat(movie.rating), 0) / filteredMovies.length).toFixed(1) : '0.0';
+
+    // Calculate average rating only for movies where a user provided a rating (ignore null, undefined, empty, or 0)
+    const ratedMovies = filteredMovies.filter(
+        movie => movie.rating !== null && movie.rating !== undefined && movie.rating !== "" && Number(movie.rating) > 0
+    );
+    const avgRating = ratedMovies.length > 0
+      ? (ratedMovies.reduce((sum, movie) => sum + parseFloat(movie.rating), 0) / ratedMovies.length).toFixed(1)
+      : '0.0';
 
     document.getElementById('filmsThisYear').textContent = thisYearMovies.length;
     document.getElementById('filmsAllTime').textContent = filteredMovies.length;
@@ -589,7 +595,8 @@ function loadDecadeStats() {
     const decadeStats = {};
 
     filteredMovies.forEach(movie => {
-        if (movie.year) {
+        // Only consider movies with a valid, non-empty, non-zero rating
+        if (movie.year && movie.rating !== null && movie.rating !== undefined && movie.rating !== "" && Number(movie.rating) > 0) {
             const year = parseInt(movie.year);
             const decade = Math.floor(year / 10) * 10;
             const decadeLabel = `${decade}s`;
@@ -604,7 +611,7 @@ function loadDecadeStats() {
     });
 
     const sortedDecades = Object.entries(decadeStats)
-        .map(([decade, data]) => [decade, (data.sum / data.total).toFixed(2)])
+        .map(([decade, data]) => [decade, (data.total > 0 ? (data.sum / data.total).toFixed(2) : '0.00')])
         .sort(([,a], [,b]) => parseFloat(b) - parseFloat(a));
 
     const element = document.getElementById('decadeStats');
