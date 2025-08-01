@@ -82,53 +82,74 @@ class EnhancedScraper:
                 break
             for entry in rows:
                 movie = self.parse_entry(entry)
+                print(f"Processing entry: {movie['title']} ({movie['watch_date']})")
                 if movie:
                     self.enrich_with_tmdb(movie)
                     self.movies.append(movie)
 
     def parse_entry(self, entry):
-        # Update month/year if present
-        cal = entry.find('td', class_='td-calendar')
-        if cal:
-            strong = cal.find('strong')
-            if strong:
-                self.current_month = strong.text.strip()
-            small = cal.find('small')
-            if small:
-                self.current_year = small.text.strip()
-        # Day
-        day_cell = entry.find('td', class_='td-day')
-        day = day_cell.find('a').text.strip() if day_cell and day_cell.find('a') else None
-        if not (day and self.current_month and self.current_year):
+        # Check if month/year cell is populated
+        month_cell = entry.find('td', class_='col-monthdate')
+        if month_cell:
+            month_link = month_cell.find('a', class_='month')
+            year_link = month_cell.find('a', class_='year')
+            if month_link:
+                self.current_month = month_link.text.strip()
+            if year_link:
+                self.current_year = year_link.text.strip()
+
+        # Ensure we have valid month/year from state
+        if not self.current_month or not self.current_year:
             return None
-        # Format watch_date
+
+        # Day
+        day = ''
+        day_cell = entry.find('td', class_='col-daydate')
+        if day_cell:
+            day_link = day_cell.find('a', class_='daydate')
+            if day_link:
+                day = day_link.text.strip()
+
+        if not day:
+            return None
+
+        # Build watch_date
         try:
             watch_date = datetime.strptime(
                 f"{day} {self.current_month} {self.current_year}", "%d %b %Y"
             ).date().isoformat()
-        except:
+        except Exception:
             return None
 
-        # Title & release year
-        details = entry.find('td', class_='td-film-details')
-        title_tag = details.find('h2', class_='name') if details else None
-        title = title_tag.text.strip() if title_tag else ''
-        year_tag = details.find('span', class_='releasedate') if details else None
-        year = year_tag.find('a').text.strip() if year_tag and year_tag.find('a') else ''
+        # Title & year
+        title = ''
+        film_year = ''
+        production_td = entry.find('td', class_='col-production')
+        if production_td:
+            h2 = production_td.find('h2', class_='name')
+            if h2 and h2.find('a'):
+                title = h2.find('a').text.strip()
+
+            release_span = production_td.find('span', class_='releasedate')
+            if release_span and release_span.find('a'):
+                film_year = release_span.find('a').text.strip()
 
         # Rating
         rating = ''
-        rating_td = entry.find('td', class_='td-rating')
+        rating_td = entry.find('td', class_='col-rating')
         if rating_td:
-            span = rating_td.find('span', class_='rating')
-            if span:
-                for cls in span.get('class', []):
-                    if cls.startswith('rated-'):
-                        rating = str(int(cls.split('-')[1]) / 2.0)
+            input_tag = rating_td.find('input', class_='rateit-field')
+            if input_tag and input_tag.has_attr('value'):
+                try:
+                    val = int(input_tag['value'])
+                    if val > 0:
+                        rating = str(val / 2.0)
+                except ValueError:
+                    pass
 
         return {
             'title': title,
-            'year': year,
+            'year': film_year,
             'watch_date': watch_date,
             'rating': rating,
             'director': '',
