@@ -399,7 +399,7 @@ function getGenreDistribution() {
     
     const sortedGenres = Object.entries(genres)
         .sort(([,a], [,b]) => b - a)
-        .slice(0, 8);
+        .slice(0, 10);
     
     return {
         labels: sortedGenres.map(([genre]) => genre),
