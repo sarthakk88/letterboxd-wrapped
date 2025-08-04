@@ -247,7 +247,13 @@ function updateStatsCards() {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const filmsThisPeriod = filteredMovies.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear).length;
-    const averageRating = filteredMovies.length > 0 ? (filteredMovies.reduce((sum, movie) => sum + movie.rating, 0) / filteredMovies.length).toFixed(1) : 0;
+    // Calculate average rating only for movies where a user provided a rating (ignore null, undefined, empty, or 0)
+    const ratedMovies = filteredMovies.filter(
+        movie => movie.rating !== null && movie.rating !== undefined && movie.rating !== "" && Number(movie.rating) > 0
+    );
+    const averageRating = ratedMovies.length > 0
+      ? (ratedMovies.reduce((sum, movie) => sum + parseFloat(movie.rating), 0) / ratedMovies.length).toFixed(1)
+      : '0.0';
     const totalMinutes = filteredMovies.reduce((sum, movie) => sum + (movie.runtime || 0), 0);
     const totalHours = Math.round(totalMinutes / 60);
 
@@ -479,12 +485,24 @@ function updateDirectorsList(elementId, directors) {
 function updateTopRatedDecades() {
     const decades = {};
     filteredMovies.forEach(movie => {
-        const decade = Math.floor(movie.year / 10) * 10;
-        if (!decades[decade]) {
-            decades[decade] = { sum: 0, count: 0 };
+        if (
+            movie.year &&
+            movie.rating !== null &&
+            movie.rating !== undefined &&
+            movie.rating !== "" &&
+            Number(movie.rating) > 0
+        ) {
+            const year = parseInt(movie.year);
+            const rating = parseFloat(movie.rating);
+            const decade = Math.floor(year / 10) * 10;
+
+            if (!decades[decade]) {
+                decades[decade] = { sum: 0, count: 0 };
+            }
+
+            decades[decade].sum += rating;
+            decades[decade].count += 1;
         }
-        decades[decade].sum += movie.rating;
-        decades[decade].count += 1;
     });
     
     const sortedDecades = Object.entries(decades)
