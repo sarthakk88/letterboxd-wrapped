@@ -3,142 +3,994 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Letterboxd Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Letterboxd Wrapped Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            /* Authentic Letterboxd Colors */
+            --letterboxd-bg: #14181c;
+            --letterboxd-surface: #1f2937;
+            --letterboxd-card: #242a33;
+            --letterboxd-green: #00d735;
+            --letterboxd-green-hover: #00b82f;
+            --letterboxd-orange: #ff8000;
+            --letterboxd-blue: #40bcf4;
+            --letterboxd-text: #ffffff;
+            --letterboxd-text-muted: #9ca3af;
+            --letterboxd-text-dark: #6b7280;
+            --letterboxd-border: #374151;
+            --letterboxd-hover: #374151;
+
+            /* Modern gradients */
+            --gradient-primary: linear-gradient(135deg, var(--letterboxd-green) 0%, #00b82f 100%);
+            --gradient-secondary: linear-gradient(135deg, var(--letterboxd-orange) 0%, #ff6b00 100%);
+            --gradient-accent: linear-gradient(135deg, var(--letterboxd-blue) 0%, #3b94c7 100%);
+
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.3);
+
+            /* Border radius */
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--letterboxd-bg);
+            color: var(--letterboxd-text);
+            line-height: 1.6;
+            font-feature-settings: 'liga' 1, 'calt' 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Modern Header */
+        .header {
+            background: rgba(31, 41, 55, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--letterboxd-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1.5rem 0;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 3rem;
+            background: var(--letterboxd-surface);
+            padding: 0.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--letterboxd-border);
+        }
+
+        .tab-button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--letterboxd-text-muted);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .tab-button.active {
+            background: var(--letterboxd-green);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .tab-button:hover:not(.active) {
+            background: var(--letterboxd-hover);
+            color: var(--letterboxd-text);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Date Filter Controls */
+        .filter-controls {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--letterboxd-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--letterboxd-border);
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--letterboxd-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modern-input {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid var(--letterboxd-border);
+            border-radius: var(--radius-md);
+            background: var(--letterboxd-card);
+            color: var(--letterboxd-text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            min-width: 140px;
+        }
+
+        .modern-input:focus {
+            border-color: var(--letterboxd-green);
+            box-shadow: 0 0 0 3px rgba(0, 215, 53, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .filter-button {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: var(--radius-md);
+            background: var(--gradient-primary);
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .clear-filters {
+            padding: 0.875rem 1.5rem;
+            border: 1px solid var(--letterboxd-border);
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--letterboxd-text-muted);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .clear-filters:hover {
+            border-color: var(--letterboxd-orange);
+            color: var(--letterboxd-orange);
+            background: rgba(255, 128, 0, 0.05);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--letterboxd-card);
+            border: 1px solid var(--letterboxd-border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--letterboxd-green);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            color: var(--letterboxd-text-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-section {
+            background: var(--letterboxd-card);
+            border: 1px solid var(--letterboxd-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-secondary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .chart-section:hover {
+            border-color: var(--letterboxd-orange);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .chart-section:hover::before {
+            opacity: 1;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--letterboxd-text);
+            letter-spacing: -0.01em;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        /* Lists */
+        .list-container {
+            background: var(--letterboxd-card);
+            border: 1px solid var(--letterboxd-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .list-container:hover {
+            border-color: var(--letterboxd-blue);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .list-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--letterboxd-text);
+            letter-spacing: -0.01em;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 0.75rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .list-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--letterboxd-green);
+            transform: translateX(8px);
+        }
+
+        .list-item-name {
+            font-weight: 600;
+            color: var(--letterboxd-text);
+            font-size: 0.95rem;
+        }
+
+        .list-item-value {
+            font-weight: 700;
+            color: var(--letterboxd-green);
+            font-size: 0.9rem;
+        }
+
+        /* Filter Status */
+        .filter-status {
+            background: rgba(0, 215, 53, 0.1);
+            border: 1px solid rgba(0, 215, 53, 0.3);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            margin-bottom: 2rem;
+            color: var(--letterboxd-green);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        .filter-status.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .header-content {
+                padding: 0 1rem;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .control-group {
+                width: 100%;
+            }
+
+            .modern-input {
+                min-width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 2.5rem;
+            }
+
+            .tab-nav {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .tab-button {
+                padding: 0.875rem 1.5rem;
+            }
+
+            .filter-controls {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modern-input {
+                font-size: 0.85rem;
+            }
+
+            .filter-button, .clear-filters {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.85rem;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(0, 215, 53, 0.1);
+            border-top: 3px solid var(--letterboxd-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--letterboxd-text-muted);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--letterboxd-surface);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--letterboxd-green);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--letterboxd-green-hover);
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header class="site-header">
-        <div class="container">
-            <h1 class="site-title">LETTERBOXD</h1>
-            <nav class="tabs">
-                <button class="nav-tab active" data-tab="diary">Diary</button>
-                <button class="nav-tab" data-tab="stats">Stats</button>
-                <button class="nav-tab" data-tab="list">List</button>
-            </nav>
-            <div class="last-updated" id="lastUpdated">Loading...</div>
+    <!-- Modern Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Letterboxd Wrapped</div>
         </div>
     </header>
 
-    <main class="container">
-        <!-- Date Filter -->
-        <div class="filter">
-            <label for="startDate">From:</label>
-            <input type="date" id="startDate">
-            <label for="endDate">To:</label>
-            <input type="date" id="endDate">
-            <button id="applyFilter">Apply</button>
-            <button id="clearFilter">Clear</button>
-            <div id="filterStatus">
-                <span id="filterStatusText">Loading data...</span>
+    <div class="container">
+        <!-- Date Filter Controls -->
+        <div class="filter-controls">
+            <div class="control-group">
+                <label class="control-label" for="filterStart">From Date</label>
+                <input type="date" id="filterStart" class="modern-input">
             </div>
+            <div class="control-group">
+                <label class="control-label" for="filterEnd">To Date</label>
+                <input type="date" id="filterEnd" class="modern-input">
+            </div>
+            <button class="filter-button" onclick="applyFilters()">Apply Filter</button>
+            <button class="clear-filters" onclick="clearFilters()">Clear Filters</button>
         </div>
 
-        <!-- Tab Content -->
-        <div class="tab-content">
-            <!-- Diary Tab -->
-            <div id="diary-tab" class="tab-pane active">
-                <!-- Overview Cards -->
-                <div class="overview-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="filmsThisYear">--</div>
-                        <div class="stat-label">Films this year</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="filmsAllTime">--</div>
-                        <div class="stat-label">Films all time</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="averageRating">--</div>
-                        <div class="stat-label">Average rating</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalWatchTime">--</div>
-                        <div class="stat-label">Total watch time</div>
+        <!-- Filter Status -->
+        <div id="filterStatus" class="filter-status"></div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-button active" onclick="switchTab('diary')">Diary</button>
+            <button class="tab-button" onclick="switchTab('stats')">Stats</button>
+            <button class="tab-button" onclick="switchTab('lists')">Lists</button>
+        </div>
+
+        <!-- Loading state -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading your cinematic data...</p>
+        </div>
+
+        <!-- Diary Tab -->
+        <div id="diary-tab" class="tab-content active">
+            <!-- Stats overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="filmsThisYear">142</div>
+                    <div class="stat-label">Films this year</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="filmsAllTime">1,337</div>
+                    <div class="stat-label">Films all time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="averageRating">3.7</div>
+                    <div class="stat-label">Average rating</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalWatchTime">287h</div>
+                    <div class="stat-label">Total watch time</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-section">
+                    <h3 class="chart-title">Genre Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="genreChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Charts Grid -->
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <h3>Genre Distribution</h3>
-                        <canvas id="genreChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <h3>Rating Distribution</h3>
+                <div class="chart-section">
+                    <h3 class="chart-title">Rating Distribution</h3>
+                    <div class="chart-container">
                         <canvas id="ratingChart"></canvas>
                     </div>
-                    <div class="chart-card">
-                        <h3>Monthly Activity (Count)</h3>
+                </div>
+
+                <div class="chart-section">
+                    <h3 class="chart-title">Monthly Activity (Count)</h3>
+                    <div class="chart-container">
                         <canvas id="monthlyCountChart"></canvas>
                     </div>
-                    <div class="chart-card">
-                        <h3>Monthly Activity (Minutes)</h3>
+                </div>
+
+                <div class="chart-section">
+                    <h3 class="chart-title">Monthly Activity (Minutes)</h3>
+                    <div class="chart-container">
                         <canvas id="monthlyMinutesChart"></canvas>
                     </div>
                 </div>
+            </div>
 
-                <!-- Leaders Grid -->
-                <div class="leaders-grid">
-                    <div class="card">
-                        <h3>Top Directors (This Year)</h3>
-                        <div id="topDirectorsYear" class="leader-list"></div>
-                    </div>
-                    <div class="card">
-                        <h3>Top Directors (All Time)</h3>
-                        <div id="topDirectorsAll" class="leader-list"></div>
-                    </div>
-                    <!-- <div class="card">
-                        <h3>Top Cast (This Year)</h3>
-                        <div id="topCastYear" class="leader-list"></div>
-                    </div>
-                    <div class="card">
-                        <h3>Top Cast (All Time)</h3>
-                        <div id="topCastAll" class="leader-list"></div>
-                    </div> -->
+            <!-- Directors and Cast Lists -->
+            <div class="charts-grid">
+                <div class="list-container">
+                    <h3 class="list-title">Top Directors (This Year)</h3>
+                    <div id="topDirectorsThisYear"></div>
                 </div>
 
-                <!-- Recent Activity -->
-                <div class="card">
-                    <h3>Recent Activity</h3>
-                    <div id="recentActivityList" class="activity-list"></div>
+                <div class="list-container">
+                    <h3 class="list-title">Top Directors (All Time)</h3>
+                    <div id="topDirectorsAllTime"></div>
                 </div>
             </div>
 
-            <!-- Stats Tab -->
-            <div id="stats-tab" class="tab-pane">
-                <div class="stats-grid">
-                    <div class="card">
-                        <h3>Top Rated Decades</h3>
-                        <div id="decadeStats" class="stat-list"></div>
-                    </div>
-                    <div class="card">
-                        <h3>Genre Breakdown</h3>
-                        <div id="genreBreakdown" class="stat-list"></div>
-                    </div>
-                    <div class="card">
-                        <h3>Country Count</h3>
-                        <div id="countryStats" class="stat-list"></div>
+            <!-- Recent Activity -->
+            <div class="list-container">
+                <h3 class="list-title">Recent Activity</h3>
+                <div id="recentActivity"></div>
+            </div>
+        </div>
+
+        <!-- Stats Tab -->
+        <div id="stats-tab" class="tab-content">
+            <div class="charts-grid">
+                <div class="chart-section">
+                    <h3 class="chart-title">Top Rated Decades</h3>
+                    <div class="chart-container">
+                        <canvas id="decadesChart"></canvas>
                     </div>
                 </div>
-            </div>
 
-            <!-- List Tab -->
-            <div id="list-tab" class="tab-pane">
-                <div class="list-grid">
-                    <div class="card">
-                        <h3>Top Rated Films (This Year)</h3>
-                        <div id="topRatedYear" class="movie-list"></div>
+                <div class="chart-section">
+                    <h3 class="chart-title">Genre Breakdown</h3>
+                    <div class="chart-container">
+                        <canvas id="genreBreakdownChart"></canvas>
                     </div>
-                    <div class="card">
-                        <h3>Top Rated Films (All Time)</h3>
-                        <div id="topRatedAll" class="movie-list"></div>
+                </div>
+
+                <div class="chart-section">
+                    <h3 class="chart-title">Country Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="countryChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
 
-    <script src="script.js"></script>
+        <!-- Lists Tab -->
+        <div id="lists-tab" class="tab-content">
+            <div class="charts-grid">
+                <div class="list-container">
+                    <h3 class="list-title">Top Rated Films (This Year)</h3>
+                    <div id="topRatedThisYear"></div>
+                </div>
+
+                <div class="list-container">
+                    <h3 class="list-title">Top Rated Films (All Time)</h3>
+                    <div id="topRatedAllTime"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'diary';
+        let charts = {};
+        let currentData = null;
+        let filteredData = null;
+
+        // Sample data - in real app this would come from data/movies.csv and data/stats.json
+        const sampleData = {
+            stats: {
+                filmsThisYear: 142,
+                filmsAllTime: 1337,
+                averageRating: 3.7,
+                totalWatchTime: '287h 42m'
+            },
+            genres: {
+                'Drama': 52,
+                'Comedy': 38,
+                'Thriller': 29,
+                'Action': 24,
+                'Horror': 18,
+                'Sci-Fi': 16,
+                'Romance': 14,
+                'Documentary': 12
+            },
+            ratings: {
+                '★': 6,
+                '★★': 18,
+                '★★★': 42,
+                '★★★★': 58,
+                '★★★★★': 18
+            },
+            monthlyCount: {
+                'Jan': 14, 'Feb': 18, 'Mar': 12, 'Apr': 16, 'May': 22, 'Jun': 19,
+                'Jul': 15, 'Aug': 11, 'Sep': 8, 'Oct': 4, 'Nov': 2, 'Dec': 1
+            },
+            monthlyMinutes: {
+                'Jan': 1420, 'Feb': 1890, 'Mar': 1240, 'Apr': 1680, 'May': 2310, 'Jun': 1995,
+                'Jul': 1575, 'Aug': 1155, 'Sep': 840, 'Oct': 420, 'Nov': 210, 'Dec': 105
+            },
+            decades: {
+                '2020s': 68,
+                '2010s': 34,
+                '2000s': 18,
+                '1990s': 12,
+                '1980s': 6,
+                '1970s': 4
+            },
+            countries: {
+                'United States': 89,
+                'United Kingdom': 21,
+                'France': 12,
+                'Germany': 8,
+                'Japan': 7,
+                'South Korea': 5
+            },
+            topDirectors: [
+                { name: 'Christopher Nolan', count: 8 },
+                { name: 'Denis Villeneuve', count: 6 },
+                { name: 'Jordan Peele', count: 5 },
+                { name: 'Greta Gerwig', count: 4 },
+                { name: 'Chloé Zhao', count: 4 }
+            ],
+            topFilms: [
+                { name: 'Dune: Part Two', rating: 5.0, year: 2024 },
+                { name: 'Oppenheimer', rating: 4.8, year: 2023 },
+                { name: 'Everything Everywhere All at Once', rating: 4.7, year: 2022 },
+                { name: 'The Batman', rating: 4.6, year: 2022 },
+                { name: 'Top Gun: Maverick', rating: 4.5, year: 2022 }
+            ],
+            recentActivity: [
+                { name: 'Poor Things', date: '2024-01-15', rating: 4.5 },
+                { name: 'The Zone of Interest', date: '2024-01-14', rating: 4.0 },
+                { name: 'American Fiction', date: '2024-01-13', rating: 4.2 },
+                { name: 'Past Lives', date: '2024-01-12', rating: 4.8 },
+                { name: 'The Holdovers', date: '2024-01-11', rating: 4.3 }
+            ]
+        };
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update active tab button
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            currentTab = tabName;
+
+            // Load data for the current tab
+            displayTabData(tabName, filteredData || sampleData);
+        }
+
+        function applyFilters() {
+            const startDate = document.getElementById('filterStart').value;
+            const endDate = document.getElementById('filterEnd').value;
+
+            if (startDate || endDate) {
+                // In a real app, this would filter the actual data
+                // For demo, we'll just show the filter status
+                let statusText = 'Filtered by: ';
+                if (startDate) statusText += `From ${new Date(startDate).toLocaleDateString()}`;
+                if (startDate && endDate) statusText += ' ';
+                if (endDate) statusText += `To ${new Date(endDate).toLocaleDateString()}`;
+
+                document.getElementById('filterStatus').textContent = statusText;
+                document.getElementById('filterStatus').classList.add('active');
+
+                // For demo, create slightly modified data
+                filteredData = JSON.parse(JSON.stringify(sampleData));
+                filteredData.stats.filmsThisYear = Math.floor(filteredData.stats.filmsThisYear * 0.7);
+
+                displayTabData(currentTab, filteredData);
+            } else {
+                alert('Please select at least one date to filter');
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('filterStart').value = '';
+            document.getElementById('filterEnd').value = '';
+            document.getElementById('filterStatus').classList.remove('active');
+            filteredData = null;
+            displayTabData(currentTab, sampleData);
+        }
+
+        function displayTabData(tabName, data) {
+            if (tabName === 'diary') {
+                // Update stats
+                document.getElementById('filmsThisYear').textContent = data.stats.filmsThisYear.toLocaleString();
+                document.getElementById('filmsAllTime').textContent = data.stats.filmsAllTime.toLocaleString();
+                document.getElementById('averageRating').textContent = data.stats.averageRating;
+                document.getElementById('totalWatchTime').textContent = data.stats.totalWatchTime;
+
+                // Create charts for diary tab
+                createChart('genreChart', 'doughnut', data.genres, ['#00d735', '#ff8000', '#40bcf4', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57']);
+                createChart('ratingChart', 'bar', data.ratings, ['#00d735']);
+                createChart('monthlyCountChart', 'line', data.monthlyCount, ['#40bcf4']);
+                createChart('monthlyMinutesChart', 'line', data.monthlyMinutes, ['#ff8000']);
+
+                // Create lists
+                createList('topDirectorsThisYear', data.topDirectors, 'count');
+                createList('topDirectorsAllTime', data.topDirectors, 'count');
+                createList('recentActivity', data.recentActivity, 'date');
+            } else if (tabName === 'stats') {
+                // Create charts for stats tab
+                createChart('decadesChart', 'polarArea', data.decades, ['#00d735', '#ff8000', '#40bcf4', '#ff6b6b', '#4ecdc4', '#45b7d1']);
+                createChart('genreBreakdownChart', 'radar', data.genres, ['#40bcf4']);
+                createChart('countryChart', 'bar', data.countries, ['#00d735']);
+            } else if (tabName === 'lists') {
+                // Create lists for lists tab
+                createList('topRatedThisYear', data.topFilms, 'rating');
+                createList('topRatedAllTime', data.topFilms, 'rating');
+            }
+        }
+
+        function createChart(canvasId, type, data, colors) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+
+            const chartConfig = {
+                type: type,
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        data: Object.values(data),
+                        backgroundColor: colors,
+                        borderColor: colors.map(color => color + '80'),
+                        borderWidth: 2,
+                        tension: type === 'line' ? 0.4 : undefined
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: type !== 'bar',
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    family: 'Inter',
+                                    size: 12,
+                                    weight: 500
+                                },
+                                padding: 20
+                            }
+                        }
+                    },
+                    scales: (type === 'line' || type === 'bar') ? {
+                        y: {
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    } : (type === 'radar' ? {
+                        r: {
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: 'Inter',
+                                    size: 10
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            pointLabels: {
+                                color: '#ffffff',
+                                font: {
+                                    family: 'Inter',
+                                    size: 11,
+                                    weight: 500
+                                }
+                            }
+                        }
+                    } : {})
+                }
+            };
+
+            charts[canvasId] = new Chart(ctx, chartConfig);
+        }
+
+        function createList(containerId, items, valueKey = 'count') {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            items.slice(0, 10).forEach((item, index) => {
+                const listItem = document.createElement('div');
+                listItem.className = 'list-item';
+
+                const name = document.createElement('span');
+                name.className = 'list-item-name';
+                name.textContent = item.name + (item.year ? ` (${item.year})` : '');
+
+                const value = document.createElement('span');
+                value.className = 'list-item-value';
+                if (valueKey === 'rating') {
+                    value.textContent = '★'.repeat(Math.floor(item[valueKey])) + (item[valueKey] % 1 >= 0.5 ? '½' : '');
+                } else if (valueKey === 'date') {
+                    value.textContent = new Date(item[valueKey]).toLocaleDateString();
+                } else {
+                    value.textContent = item[valueKey];
+                }
+
+                listItem.appendChild(name);
+                listItem.appendChild(value);
+                container.appendChild(listItem);
+
+                // Add stagger animation
+                listItem.style.animationDelay = `${index * 0.1}s`;
+                listItem.style.animation = 'fadeIn 0.6s ease-in-out forwards';
+                listItem.style.opacity = '0';
+            });
+        }
+
+        // Initialize with sample data on page load
+        window.addEventListener('load', () => {
+            currentData = sampleData;
+            displayTabData('diary', sampleData);
+        });
+    </script>
 </body>
 </html>
