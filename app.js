@@ -39,9 +39,8 @@ function showLoading(show) {
 
 async function loadData() {
     try {
-        // Load CSV data from provided URL
+        // Load CSV and JSON data from local data folder
         await loadCSVData();
-        // Load JSON stats from provided URL
         await loadJSONStats();
     } catch (error) {
         console.error('Could not load data files:', error);
@@ -51,7 +50,7 @@ async function loadData() {
 
 function loadCSVData() {
     return new Promise((resolve, reject) => {
-        Papa.parse('https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/be12f22623b7fc975b88c355382ee7de/111147fc-cb2a-4a47-b608-c2698a1c83a2/86c9ce69.csv', {
+        Papa.parse('data/movies.csv', {
             download: true,
             header: true,
             skipEmptyLines: true,
@@ -82,7 +81,7 @@ function loadCSVData() {
 
 async function loadJSONStats() {
     try {
-        const response = await fetch('https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/be12f22623b7fc975b88c355382ee7de/be108f71-02ff-4ac9-943b-fd2d6321d078/d5251caf.json');
+        const response = await fetch('data/stats.json');
         if (response.ok) {
             statsData = await response.json();
         } else {
