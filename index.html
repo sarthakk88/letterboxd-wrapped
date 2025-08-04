@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Letterboxd Wrapped</title>
-
-    <!-- Styles and libraries -->
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -15,7 +13,7 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1 class="logo">Letterboxd Wrapped</h1>
+                <h1 class="logo">Letterboxd</h1>
             </div>
         </header>
 
@@ -29,24 +27,6 @@
 
         <!-- Main Content -->
         <main class="main-content" id="main-content" style="display: none;">
-
-            <!-- Date Filter Controls -->
-            <div class="filter-controls">
-                <div class="control-group">
-                    <label class="control-label" for="filterStart">From Date</label>
-                    <input type="date" id="filterStart" class="modern-input">
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="filterEnd">To Date</label>
-                    <input type="date" id="filterEnd" class="modern-input">
-                </div>
-                <button class="filter-button">Apply Filter</button>
-                <button class="clear-filters">Clear Filters</button>
-            </div>
-
-            <!-- Filter Status -->
-            <div id="filterStatus" class="filter-status"></div>
-
             <!-- Tab Navigation -->
             <nav class="tab-nav">
                 <button class="tab-btn active" data-tab="diary">Diary</button>
@@ -164,7 +144,6 @@
         </main>
     </div>
 
-    <!-- Main Script -->
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
