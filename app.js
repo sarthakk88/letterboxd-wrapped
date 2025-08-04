@@ -2,9 +2,21 @@
 let movieData = [];
 let statsData = {};
 let charts = {};
+let filteredMovies = []; 
 
 // Chart.js colors as specified
-const chartColors = ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545', '#D2BA4C', '#964325', '#944454', '#13343B'];
+const chartColors = [
+    '#00d735',  // Letterboxd signature green
+    '#ff8000',  // Letterboxd orange
+    '#40bcf4',  // Letterboxd blue
+    '#ff6b6b',  // Modern coral red
+    '#4ecdc4',  // Modern teal
+    '#45b7d1',  // Sky blue
+    '#96ceb4',  // Mint green
+    '#feca57',  // Warm yellow
+    '#ff9ff3',  // Soft pink
+    '#54a0ff'   // Bright blue
+];
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -62,11 +74,13 @@ function loadCSVData() {
                         director: row.director || row.Director || 'Unknown',
                         genre: row.genre || row.Genre || 'Unknown',
                         rating: parseFloat(row.rating || row.Rating) || 0,
-                        watch_date: row.watch_date || row['Watch Date'] || row.date || new Date().toISOString().split('T')[0],
+                        watch_date: new Date(row.watch_date || row['Watch Date'] || row.date || new Date().toISOString().split('T')[0]),
                         runtime: parseInt(row.runtime || row.Runtime) || 90,
                         country: row.country || row.Country || 'Unknown',
                         cast: row.cast || row.Cast || ''
                     }));
+                    // Initialize filtered movies to all movies
+                    filteredMovies = [...movieData];
                     resolve();
                 } else {
                     reject('No data found in CSV');
@@ -78,6 +92,7 @@ function loadCSVData() {
         });
     });
 }
+
 
 async function loadJSONStats() {
     try {
@@ -114,7 +129,77 @@ function setupEventListeners() {
             switchTab(tabName);
         });
     });
+    // Date filter event listeners
+    document.getElementById('filterStart').addEventListener('change', applyFilters);
+    document.getElementById('filterEnd').addEventListener('change', applyFilters);
+    document.querySelector('.filter-button').addEventListener('click', applyFilters);
+    document.querySelector('.clear-filters').addEventListener('click', clearFilters);
 }
+
+// Filter functions
+function applyFilters() {
+    const startDate = document.getElementById('filterStart').value;
+    const endDate = document.getElementById('filterEnd').value;
+
+    if (!startDate && !endDate) {
+        alert('Please select at least one date to filter');
+        return;
+    }
+
+    filteredMovies = movieData.filter(movie => {
+        const movieDate = movie.watch_date;
+        let includeMovie = true;
+
+        if (startDate) {
+            includeMovie = includeMovie && movieDate >= new Date(startDate);
+        }
+
+        if (endDate) {
+            includeMovie = includeMovie && movieDate <= new Date(endDate);
+        }
+
+        return includeMovie;
+    });
+
+    // Update filter status
+    let statusText = 'Filtered by: ';
+    if (startDate) statusText += `From ${new Date(startDate).toLocaleDateString()}`;
+    if (startDate && endDate) statusText += ' ';
+    if (endDate) statusText += `To ${new Date(endDate).toLocaleDateString()}`;
+
+    document.getElementById('filterStatus').textContent = statusText;
+    document.getElementById('filterStatus').classList.add('active');
+
+    // Refresh current tab
+    refreshCurrentTab();
+}
+
+function clearFilters() {
+    document.getElementById('filterStart').value = '';
+    document.getElementById('filterEnd').value = '';
+    document.getElementById('filterStatus').classList.remove('active');
+
+    // Reset to all movies
+    filteredMovies = [...movieData];
+
+    // Refresh current tab
+    refreshCurrentTab();
+}
+
+function refreshCurrentTab() {
+    const activeTab = document.querySelector('.tab-panel.active');
+    if (activeTab) {
+        const tabId = activeTab.id;
+        if (tabId === 'diary-tab') {
+            updateDiaryTab();
+        } else if (tabId === 'stats-tab') {
+            updateStatsTab();
+        } else if (tabId === 'lists-tab') {
+            updateListsTab();
+        }
+    }
+}
+
 
 function switchTab(tabName) {
     console.log('Switching to tab:', tabName); // Debug log
@@ -158,12 +243,12 @@ function updateDiaryTab() {
 }
 
 function updateStatsCards() {
-    const totalFilms = movieData.length;
+    const totalFilms = filteredMovies.length;
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
-    const filmsThisPeriod = movieData.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear).length;
-    const averageRating = movieData.length > 0 ? (movieData.reduce((sum, movie) => sum + movie.rating, 0) / movieData.length).toFixed(1) : 0;
-    const totalMinutes = movieData.reduce((sum, movie) => sum + (movie.runtime || 0), 0);
+    const filmsThisPeriod = filteredMovies.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear).length;
+    const averageRating = filteredMovies.length > 0 ? (filteredMovies.reduce((sum, movie) => sum + movie.rating, 0) / filteredMovies.length).toFixed(1) : 0;
+    const totalMinutes = filteredMovies.reduce((sum, movie) => sum + (movie.runtime || 0), 0);
     const totalHours = Math.round(totalMinutes / 60);
 
     document.getElementById('films-this-period').textContent = filmsThisPeriod;
@@ -226,17 +311,17 @@ function updateDiaryCharts() {
 function updateDirectorsLists() {
     // Top Directors This Period
     const currentYear = new Date().getFullYear();
-    const thisYearMovies = movieData.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
+    const thisYearMovies = filteredMovies.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
     const directorsThisPeriod = getTopDirectors(thisYearMovies);
     updateDirectorsList('directors-this-period', directorsThisPeriod);
 
     // Top Directors All Time
-    const directorsAllTime = getTopDirectors(movieData);
+    const directorsAllTime = getTopDirectors(filteredMovies);
     updateDirectorsList('directors-all-time', directorsAllTime);
 }
 
 function updateRecentActivity() {
-    const recentMovies = [...movieData]
+    const recentMovies = [...filteredMovies]
         .sort((a, b) => new Date(b.watch_date) - new Date(a.watch_date))
         .slice(0, 5);
     
@@ -303,7 +388,7 @@ function createChart(canvasId, type, data) {
 // Data processing functions
 function getGenreDistribution() {
     const genres = {};
-    movieData.forEach(movie => {
+    filteredMovies.forEach(movie => {
         const movieGenres = movie.genre.split(',').map(g => g.trim());
         movieGenres.forEach(genre => {
             if (genre && genre !== 'Unknown') {
@@ -324,7 +409,7 @@ function getGenreDistribution() {
 
 function getRatingDistribution() {
     const ratings = {};
-    movieData.forEach(movie => {
+    filteredMovies.forEach(movie => {
         const rating = Math.floor(movie.rating);
         if (rating > 0) {
             ratings[rating] = (ratings[rating] || 0) + 1;
@@ -341,7 +426,7 @@ function getMonthlyActivityCount() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const monthCounts = new Array(12).fill(0);
     
-    movieData.forEach(movie => {
+    filteredMovies.forEach(movie => {
         const month = new Date(movie.watch_date).getMonth();
         monthCounts[month]++;
     });
@@ -356,7 +441,7 @@ function getMonthlyActivityMinutes() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const monthMinutes = new Array(12).fill(0);
     
-    movieData.forEach(movie => {
+    filteredMovies.forEach(movie => {
         const month = new Date(movie.watch_date).getMonth();
         monthMinutes[month] += movie.runtime || 0;
     });
@@ -393,7 +478,7 @@ function updateDirectorsList(elementId, directors) {
 
 function updateTopRatedDecades() {
     const decades = {};
-    movieData.forEach(movie => {
+    filteredMovies.forEach(movie => {
         const decade = Math.floor(movie.year / 10) * 10;
         if (!decades[decade]) {
             decades[decade] = { sum: 0, count: 0 };
@@ -433,7 +518,7 @@ function updateGenreBreakdown() {
 
 function updateCountryCount() {
     const countries = {};
-    movieData.forEach(movie => {
+    filteredMovies.forEach(movie => {
         if (movie.country && movie.country !== 'Unknown') {
             countries[movie.country] = (countries[movie.country] || 0) + 1;
         }
@@ -456,7 +541,7 @@ function updateCountryCount() {
 function updateTopRatedFilms() {
     // Top Rated Films This Period
     const currentYear = new Date().getFullYear();
-    const thisYearMovies = movieData.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
+    const thisYearMovies = filteredMovies.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
     const topRatedThisPeriod = [...thisYearMovies]
         .sort((a, b) => b.rating - a.rating)
         .slice(0, 10);
@@ -464,7 +549,7 @@ function updateTopRatedFilms() {
     updateMovieList('top-rated-this-period', topRatedThisPeriod);
 
     // Top Rated Films All Time
-    const topRatedAllTime = [...movieData]
+    const topRatedAllTime = [...filteredMovies]
         .sort((a, b) => b.rating - a.rating)
         .slice(0, 10);
     

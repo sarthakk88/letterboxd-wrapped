@@ -27,6 +27,23 @@
 
         <!-- Main Content -->
         <main class="main-content" id="main-content" style="display: none;">
+            <!-- Date Filter Controls -->
+            <div class="filter-controls">
+                <div class="control-group">
+                    <label class="control-label" for="filterStart">From Date</label>
+                    <input type="date" id="filterStart" class="modern-input">
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="filterEnd">To Date</label>
+                    <input type="date" id="filterEnd" class="modern-input">
+                </div>
+                <button class="filter-button">Apply Filter</button>
+                <button class="clear-filters">Clear Filters</button>
+            </div>
+
+            <!-- Filter Status -->
+            <div id="filterStatus" class="filter-status"></div>
+
             <!-- Tab Navigation -->
             <nav class="tab-nav">
                 <button class="tab-btn active" data-tab="diary">Diary</button>
