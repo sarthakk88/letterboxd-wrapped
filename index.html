@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Letterboxd Wrapped</title>
+
+    <!-- Styles and libraries -->
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -13,7 +15,7 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1 class="logo">Letterboxd</h1>
+                <h1 class="logo">Letterboxd Wrapped</h1>
             </div>
         </header>
 
@@ -27,7 +29,7 @@
 
         <!-- Main Content -->
         <main class="main-content" id="main-content" style="display: none;">
-            
+
             <!-- Date Filter Controls -->
             <div class="filter-controls">
                 <div class="control-group">
@@ -38,8 +40,8 @@
                     <label class="control-label" for="filterEnd">To Date</label>
                     <input type="date" id="filterEnd" class="modern-input">
                 </div>
-                <button class="filter-button" onclick="applyFilters()">Apply Filter</button>
-                <button class="clear-filters" onclick="clearFilters()">Clear Filters</button>
+                <button class="filter-button">Apply Filter</button>
+                <button class="clear-filters">Clear Filters</button>
             </div>
 
             <!-- Filter Status -->
@@ -60,7 +62,7 @@
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-number" id="films-this-period">-</div>
-                            <div class="stat-label">Films This Year</div>
+                            <div class="stat-label">Films This Period</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number" id="films-all-time">-</div>
@@ -108,7 +110,7 @@
                     <div class="directors-section">
                         <div class="directors-grid">
                             <div class="list-section">
-                                <h3>Top Directors (This Year)</h3>
+                                <h3>Top Directors (This Period)</h3>
                                 <div id="directors-this-period" class="director-list"></div>
                             </div>
                             <div class="list-section">
@@ -149,7 +151,7 @@
                 <div id="lists-tab" class="tab-panel">
                     <div class="lists-grid">
                         <div class="list-section">
-                            <h3>Top Rated Films (This Year)</h3>
+                            <h3>Top Rated Films (This Period)</h3>
                             <div id="top-rated-this-period" class="movie-list"></div>
                         </div>
                         <div class="list-section">
@@ -162,6 +164,7 @@
         </main>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Main Script -->
+    <script src="script.js"></script>
 </body>
 </html>
