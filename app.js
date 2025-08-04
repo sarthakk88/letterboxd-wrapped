@@ -4,7 +4,18 @@ let statsData = {};
 let charts = {};
 
 // Chart.js colors as specified
-const chartColors = ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545', '#D2BA4C', '#964325', '#944454', '#13343B'];
+const chartColors = [
+    '#00d735',  // Letterboxd signature green
+    '#ff8000',  // Letterboxd orange
+    '#40bcf4',  // Letterboxd blue
+    '#ff6b6b',  // Modern coral red
+    '#4ecdc4',  // Modern teal
+    '#45b7d1',  // Sky blue
+    '#96ceb4',  // Mint green
+    '#feca57',  // Warm yellow
+    '#ff9ff3',  // Soft pink
+    '#54a0ff'   // Bright blue
+];
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
