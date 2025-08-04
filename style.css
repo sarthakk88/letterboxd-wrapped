@@ -1048,17 +1048,18 @@ body {
   font-weight: var(--font-weight-bold);
 }
 
-/* Date Filter Controls */
+/* Date Filter Controls - Added for filter functionality */
 .filter-controls {
     display: flex;
     gap: 1.5rem;
     margin-bottom: 2rem;
     padding: 2rem;
-    background: var(--letterboxd-surface);
+    background: var(--color-surface);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--letterboxd-border);
+    border: 1px solid var(--color-card-border);
     align-items: end;
     flex-wrap: wrap;
+    backdrop-filter: blur(10px);
 }
 
 .control-group {
@@ -1068,54 +1069,84 @@ body {
 }
 
 .control-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--letterboxd-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .modern-input {
-    padding: 0.75rem 1rem;
-    border: 1.5px solid var(--letterboxd-border);
-    border-radius: var(--radius-md);
-    background: var(--letterboxd-card);
-    color: var(--letterboxd-text);
-    font-size: 0.9rem;
-    transition: all 0.2s;
+    padding: var(--space-8) var(--space-12);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    transition: all var(--duration-normal) var(--ease-standard);
+    outline: none;
+    min-width: 140px;
 }
 
 .modern-input:focus {
     border-color: var(--letterboxd-green);
-    box-shadow: 0 0 0 3px rgba(0,215,53,0.1);
+    box-shadow: 0 0 0 3px rgba(0, 215, 53, 0.1);
     transform: translateY(-1px);
 }
 
 .filter-button {
-    padding: 0.875rem 2rem;
-    background: var(--gradient-primary);
-    color: #fff;
+    padding: var(--space-8) var(--space-20);
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
+    background: linear-gradient(45deg, var(--letterboxd-green), var(--letterboxd-blue));
+    color: white;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-standard);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
 
 .clear-filters {
-    padding: 0.75rem 1.5rem;
-    border: 1px solid var(--letterboxd-border);
+    padding: var(--space-8) var(--space-16);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
     background: transparent;
-    color: var(--letterboxd-text-muted);
+    color: var(--color-text-secondary);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-standard);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
+.clear-filters:hover {
+    border-color: var(--letterboxd-orange);
+    color: var(--letterboxd-orange);
+    background: rgba(255, 128, 0, 0.05);
+}
+
+/* Filter Status */
 .filter-status {
-    background: rgba(0,215,53,0.1);
-    border: 1px solid rgba(0,215,53,0.3);
-    border-radius: var(--radius-md);
-    padding: 0.75rem 1rem;
-    color: var(--letterboxd-green);
+    background: rgba(0, 215, 53, 0.1);
+    border: 1px solid rgba(0, 215, 53, 0.3);
+    border-radius: var(--radius-base);
+    padding: var(--space-8) var(--space-12);
     margin-bottom: 2rem;
+    color: var(--letterboxd-green);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
     display: none;
 }
 
