@@ -1,605 +1,502 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
-:root {
-    /* Authentic Letterboxd Colors */
-    --letterboxd-bg: #14181c;
-    --letterboxd-surface: #1f2937;
-    --letterboxd-card: #242a33;
-    --letterboxd-green: #00d735;
-    --letterboxd-green-hover: #00b82f;
-    --letterboxd-orange: #ff8000;
-    --letterboxd-blue: #40bcf4;
-    --letterboxd-text: #ffffff;
-    --letterboxd-text-muted: #9ca3af;
-    --letterboxd-text-dark: #6b7280;
-    --letterboxd-border: #374151;
-    --letterboxd-hover: #374151;
-
-    /* Modern gradients */
-    --gradient-primary: linear-gradient(135deg, var(--letterboxd-green) 0%, #00b82f 100%);
-    --gradient-secondary: linear-gradient(135deg, var(--letterboxd-orange) 0%, #ff6b00 100%);
-    --gradient-accent: linear-gradient(135deg, var(--letterboxd-blue) 0%, #3b94c7 100%);
-
-    /* Shadows */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.3);
-
-    /* Border radius */
-    --radius-sm: 6px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: var(--letterboxd-bg);
-    color: var(--letterboxd-text);
-    line-height: 1.6;
-    font-feature-settings: 'liga' 1, 'calt' 1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* Modern Header */
-.header {
-    background: rgba(31, 41, 55, 0.95);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid var(--letterboxd-border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding: 1.5rem 0;
-}
-
-.header-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.logo {
-    font-size: 1.75rem;
-    font-weight: 800;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.02em;
-    text-align: center;
-}
-
-/* Container */
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
-}
-
-/* Date Filter Controls */
-.filter-controls {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    padding: 2rem;
-    background: var(--letterboxd-surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--letterboxd-border);
-    align-items: end;
-    flex-wrap: wrap;
-}
-
-.control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.control-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--letterboxd-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.modern-input {
-    padding: 0.75rem 1rem;
-    border: 1.5px solid var(--letterboxd-border);
-    border-radius: var(--radius-md);
-    background: var(--letterboxd-card);
-    color: var(--letterboxd-text);
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    outline: none;
-    min-width: 140px;
-}
-
-.modern-input:focus {
-    border-color: var(--letterboxd-green);
-    box-shadow: 0 0 0 3px rgba(0, 215, 53, 0.1);
-    transform: translateY(-1px);
-}
-
-.filter-button {
-    padding: 0.875rem 2rem;
-    border: none;
-    border-radius: var(--radius-md);
-    background: var(--gradient-primary);
-    color: white;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.filter-button:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.clear-filters {
-    padding: 0.875rem 1.5rem;
-    border: 1px solid var(--letterboxd-border);
-    border-radius: var(--radius-md);
-    background: transparent;
-    color: var(--letterboxd-text-muted);
-    font-family: inherit;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.clear-filters:hover {
-    border-color: var(--letterboxd-orange);
-    color: var(--letterboxd-orange);
-    background: rgba(255, 128, 0, 0.05);
-}
-
-/* Filter Status */
-.filter-status {
-    background: rgba(0, 215, 53, 0.1);
-    border: 1px solid rgba(0, 215, 53, 0.3);
-    border-radius: var(--radius-md);
-    padding: 0.75rem 1rem;
-    margin-bottom: 2rem;
-    color: var(--letterboxd-green);
-    font-size: 0.9rem;
-    font-weight: 500;
-    display: none;
-}
-
-.filter-status.active {
-    display: block;
-    animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Tab Navigation */
-.tab-nav {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 3rem;
-    background: var(--letterboxd-surface);
-    padding: 0.5rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--letterboxd-border);
-}
-
-.tab-button {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: var(--radius-md);
-    background: transparent;
-    color: var(--letterboxd-text-muted);
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    flex: 1;
-    min-width: 120px;
-}
-
-.tab-button.active {
-    background: var(--letterboxd-green);
-    color: white;
-    box-shadow: var(--shadow-md);
-}
-
-.tab-button:hover:not(.active) {
-    background: var(--letterboxd-hover);
-    color: var(--letterboxd-text);
-}
-
-/* Tab Content */
-.tab-content {
-    display: none;
-    animation: fadeIn 0.4s ease-in-out;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Loading State */
-.loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 400px;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.spinner {
-    width: 48px;
-    height: 48px;
-    border: 3px solid rgba(0, 215, 53, 0.1);
-    border-top: 3px solid var(--letterboxd-green);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading-text {
-    color: var(--letterboxd-text-muted);
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-
-/* Error State */
-.error-state {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 400px;
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-}
-
-.error-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: var(--letterboxd-orange);
-}
-
-.error-state h3 {
-    color: var(--letterboxd-orange);
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.error-state p {
-    color: var(--letterboxd-text-muted);
-    font-size: 1rem;
-    max-width: 500px;
-}
-
-/* Stats Grid */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.stat-card {
-    background: var(--letterboxd-card);
-    border: 1px solid var(--letterboxd-border);
-    border-radius: var(--radius-lg);
-    padding: 2.5rem 2rem;
-    text-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-primary);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--letterboxd-green);
-}
-
-.stat-card:hover::before {
-    opacity: 1;
-}
-
-.stat-value {
-    font-size: 3rem;
-    font-weight: 800;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 0.5rem;
-    line-height: 1;
-    letter-spacing: -0.02em;
-}
-
-.stat-label {
-    color: var(--letterboxd-text-muted);
-    font-size: 1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Charts 2x2 Grid */
-.charts-2x2 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.chart-section {
-    background: var(--letterboxd-card);
-    border: 1px solid var(--letterboxd-border);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.chart-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--gradient-secondary);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.chart-section:hover {
-    border-color: var(--letterboxd-orange);
-    box-shadow: var(--shadow-lg);
-}
-
-.chart-section:hover::before {
-    opacity: 1;
-}
-
-.chart-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: var(--letterboxd-text);
-    letter-spacing: -0.01em;
-}
-
-.chart-container {
-    position: relative;
-    height: 300px;
-    margin-bottom: 1rem;
-}
-
-/* Directors Grid */
-.directors-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-/* Stats Lists Grid */
-.stats-lists-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-/* Films Grid */
-.films-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-/* Lists */
-.list-container {
-    background: var(--letterboxd-card);
-    border: 1px solid var(--letterboxd-border);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    margin-bottom: 2rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.list-container:hover {
-    border-color: var(--letterboxd-blue);
-    box-shadow: var(--shadow-lg);
-}
-
-.list-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: var(--letterboxd-text);
-    letter-spacing: -0.01em;
-}
-
-.list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem;
-    border-radius: var(--radius-md);
-    margin-bottom: 0.75rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.list-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--letterboxd-green);
-    transform: translateX(8px);
-}
-
-.list-item-name {
-    font-weight: 600;
-    color: var(--letterboxd-text);
-    font-size: 0.95rem;
-}
-
-.list-item-value {
-    font-weight: 700;
-    color: var(--letterboxd-green);
-    font-size: 0.9rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        padding: 2rem 1rem;
-    }
-
-    .header-content {
-        padding: 0 1rem;
-    }
-
-    .filter-controls {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-        padding: 1.5rem;
-    }
-
-    .control-group {
-        width: 100%;
-    }
-
-    .modern-input {
-        min-width: 100%;
-    }
-
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .charts-2x2 {
-        grid-template-columns: 1fr;
-    }
-
-    .directors-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .films-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stats-lists-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stat-value {
-        font-size: 2.5rem;
-    }
-
-    .tab-nav {
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .tab-button {
-        padding: 0.875rem 1.5rem;
+// Global variables
+let movieData = [];
+let statsData = {};
+let charts = {};
+
+// Chart.js colors as specified
+const chartColors = [
+    '#00d735',  // Letterboxd signature green
+    '#ff8000',  // Letterboxd orange
+    '#40bcf4',  // Letterboxd blue
+    '#ff6b6b',  // Modern coral red
+    '#4ecdc4',  // Modern teal
+    '#45b7d1',  // Sky blue
+    '#96ceb4',  // Mint green
+    '#feca57',  // Warm yellow
+    '#ff9ff3',  // Soft pink
+    '#54a0ff'   // Bright blue
+];
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+async function initializeApp() {
+    try {
+        showLoading(true);
+        await loadData();
+        setupEventListeners();
+        updateAllViews();
+        showLoading(false);
+    } catch (error) {
+        console.error('Failed to initialize app:', error);
+        handleDataLoadError();
     }
 }
 
-@media (max-width: 480px) {
-    .modern-input {
-        font-size: 0.85rem;
-    }
-
-    .filter-button, .clear-filters {
-        padding: 0.75rem 1.5rem;
-        font-size: 0.85rem;
-    }
-
-    .chart-container {
-        height: 250px;
+function showLoading(show) {
+    const loadingScreen = document.getElementById('loading-screen');
+    const mainContent = document.getElementById('main-content');
+    
+    if (show) {
+        loadingScreen.style.display = 'flex';
+        mainContent.style.display = 'none';
+    } else {
+        loadingScreen.style.display = 'none';
+        mainContent.style.display = 'block';
     }
 }
 
-/* Utility Classes */
-.hidden {
-    display: none !important;
+async function loadData() {
+    try {
+        // Load CSV and JSON data from local data folder
+        await loadCSVData();
+        await loadJSONStats();
+    } catch (error) {
+        console.error('Could not load data files:', error);
+        throw error;
+    }
 }
 
-.fade-in {
-    animation: fadeIn 0.6s ease-in-out;
+function loadCSVData() {
+    return new Promise((resolve, reject) => {
+        Papa.parse('data/movies.csv', {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                if (results.data && results.data.length > 0) {
+                    movieData = results.data.map(row => ({
+                        title: row.title || row.Title || '',
+                        year: parseInt(row.year || row.Year) || new Date().getFullYear(),
+                        director: row.director || row.Director || 'Unknown',
+                        genre: row.genre || row.Genre || 'Unknown',
+                        rating: parseFloat(row.rating || row.Rating) || 0,
+                        watch_date: row.watch_date || row['Watch Date'] || row.date || new Date().toISOString().split('T')[0],
+                        runtime: parseInt(row.runtime || row.Runtime) || 90,
+                        country: row.country || row.Country || 'Unknown',
+                        cast: row.cast || row.Cast || ''
+                    }));
+                    resolve();
+                } else {
+                    reject('No data found in CSV');
+                }
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
+async function loadJSONStats() {
+    try {
+        const response = await fetch('data/stats.json');
+        if (response.ok) {
+            statsData = await response.json();
+        } else {
+            throw new Error('Stats file not found');
+        }
+    } catch (error) {
+        console.warn('Could not load stats.json, will calculate from movie data');
+        statsData = {};
+    }
 }
 
-::-webkit-scrollbar-track {
-    background: var(--letterboxd-surface);
+
+function handleDataLoadError() {
+    showLoading(false);
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div style="text-align: center; padding: 4rem;">
+            <h2>Data Loading Error</h2>
+            <p>Could not load movie data. Please check the data files.</p>
+            <button onclick="location.reload()" class="btn btn--primary">Retry</button>
+        </div>
+    `;
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--letterboxd-green);
-    border-radius: 10px;
+function setupEventListeners() {
+    // Tab navigation - Fixed event listener
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tabName = this.getAttribute('data-tab');
+            switchTab(tabName);
+        });
+    });
+    document.getElementById('filterStart').addEventListener('change', applyFilters);
+    document.getElementById('filterEnd').addEventListener('change', applyFilters);
+    document.querySelector('.filter-button').addEventListener('click', applyFilters);
+    document.querySelector('.clear-filters').addEventListener('click', clearFilters);
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: var(--letterboxd-green-hover);
+function switchTab(tabName) {
+    console.log('Switching to tab:', tabName); // Debug log
+    
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+
+    // Update tab panels
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    const activePanel = document.getElementById(`${tabName}-tab`);
+    if (activePanel) {
+        activePanel.classList.add('active');
+    }
+
+    // Update content based on active tab
+    if (tabName === 'stats') {
+        updateStatsTab();
+    } else if (tabName === 'lists') {
+        updateListsTab();
+    }
+}
+
+function updateAllViews() {
+    updateDiaryTab();
+    // Don't load other tabs immediately, load them when switched to
+}
+
+function updateDiaryTab() {
+    updateStatsCards();
+    updateDiaryCharts();
+    updateDirectorsLists();
+    updateRecentActivity();
+}
+
+function updateStatsCards() {
+    const totalFilms = movieData.length;
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const filmsThisPeriod = movieData.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear).length;
+    const averageRating = movieData.length > 0 ? (movieData.reduce((sum, movie) => sum + movie.rating, 0) / movieData.length).toFixed(1) : 0;
+    const totalMinutes = movieData.reduce((sum, movie) => sum + (movie.runtime || 0), 0);
+    const totalHours = Math.round(totalMinutes / 60);
+
+    document.getElementById('films-this-period').textContent = filmsThisPeriod;
+    document.getElementById('films-all-time').textContent = totalFilms;
+    document.getElementById('average-rating').textContent = averageRating;
+    document.getElementById('total-watch-time').textContent = totalHours + 'h';
+}
+
+function updateDiaryCharts() {
+    // Genre Distribution (Pie Chart)
+    const genreData = getGenreDistribution();
+    createChart('genre-pie-chart', 'pie', {
+        labels: genreData.labels,
+        datasets: [{
+            data: genreData.data,
+            backgroundColor: chartColors.slice(0, genreData.labels.length)
+        }]
+    });
+
+    // Rating Distribution (Bar Chart)
+    const ratingData = getRatingDistribution();
+    createChart('rating-bar-chart', 'bar', {
+        labels: ratingData.labels,
+        datasets: [{
+            label: 'Films',
+            data: ratingData.data,
+            backgroundColor: chartColors[0]
+        }]
+    });
+
+    // Monthly Activity Count (Line Chart)
+    const monthlyCountData = getMonthlyActivityCount();
+    createChart('monthly-count-chart', 'line', {
+        labels: monthlyCountData.labels,
+        datasets: [{
+            label: 'Films',
+            data: monthlyCountData.data,
+            borderColor: chartColors[1],
+            backgroundColor: chartColors[1] + '20',
+            fill: true,
+            tension: 0.4
+        }]
+    });
+
+    // Monthly Activity Minutes (Line Chart)
+    const monthlyMinutesData = getMonthlyActivityMinutes();
+    createChart('monthly-minutes-chart', 'line', {
+        labels: monthlyMinutesData.labels,
+        datasets: [{
+            label: 'Minutes',
+            data: monthlyMinutesData.data,
+            borderColor: chartColors[2],
+            backgroundColor: chartColors[2] + '20',
+            fill: true,
+            tension: 0.4
+        }]
+    });
+}
+
+function updateDirectorsLists() {
+    // Top Directors This Period
+    const currentYear = new Date().getFullYear();
+    const thisYearMovies = movieData.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
+    const directorsThisPeriod = getTopDirectors(thisYearMovies);
+    updateDirectorsList('directors-this-period', directorsThisPeriod);
+
+    // Top Directors All Time
+    const directorsAllTime = getTopDirectors(movieData);
+    updateDirectorsList('directors-all-time', directorsAllTime);
+}
+
+function updateRecentActivity() {
+    const recentMovies = [...movieData]
+        .sort((a, b) => new Date(b.watch_date) - new Date(a.watch_date))
+        .slice(0, 5);
+    
+    const listHtml = recentMovies.map(movie => `
+        <div class="movie-item">
+            <div class="movie-title">${movie.title}</div>
+            <div class="movie-meta">
+                <span>${new Date(movie.watch_date).toLocaleDateString()}</span>
+                <span class="movie-rating">★ ${movie.rating}</span>
+            </div>
+        </div>
+    `).join('');
+    
+    document.getElementById('recent-activity').innerHTML = listHtml;
+}
+
+function updateStatsTab() {
+    updateTopRatedDecades();
+    updateGenreBreakdown();
+    updateCountryCount();
+}
+
+function updateListsTab() {
+    updateTopRatedFilms();
+}
+
+function createChart(canvasId, type, data) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+
+    // Destroy existing chart
+    if (charts[canvasId]) {
+        charts[canvasId].destroy();
+    }
+
+    // Create new chart
+    charts[canvasId] = new Chart(ctx, {
+        type: type,
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ffffff'
+                    }
+                }
+            },
+            scales: type !== 'pie' && type !== 'doughnut' ? {
+                x: {
+                    ticks: { color: '#ffffff' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
+                },
+                y: {
+                    ticks: { color: '#ffffff' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
+                }
+            } : {}
+        }
+    });
+}
+
+// Data processing functions
+function getGenreDistribution() {
+    const genres = {};
+    movieData.forEach(movie => {
+        const movieGenres = movie.genre.split(',').map(g => g.trim());
+        movieGenres.forEach(genre => {
+            if (genre && genre !== 'Unknown') {
+                genres[genre] = (genres[genre] || 0) + 1;
+            }
+        });
+    });
+    
+    const sortedGenres = Object.entries(genres)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 8);
+    
+    return {
+        labels: sortedGenres.map(([genre]) => genre),
+        data: sortedGenres.map(([,count]) => count)
+    };
+}
+
+function getRatingDistribution() {
+    const ratings = {};
+    movieData.forEach(movie => {
+        const rating = Math.floor(movie.rating);
+        if (rating > 0) {
+            ratings[rating] = (ratings[rating] || 0) + 1;
+        }
+    });
+    
+    return {
+        labels: Object.keys(ratings).sort(),
+        data: Object.values(ratings)
+    };
+}
+
+function getMonthlyActivityCount() {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthCounts = new Array(12).fill(0);
+    
+    movieData.forEach(movie => {
+        const month = new Date(movie.watch_date).getMonth();
+        monthCounts[month]++;
+    });
+    
+    return {
+        labels: months,
+        data: monthCounts
+    };
+}
+
+function getMonthlyActivityMinutes() {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthMinutes = new Array(12).fill(0);
+    
+    movieData.forEach(movie => {
+        const month = new Date(movie.watch_date).getMonth();
+        monthMinutes[month] += movie.runtime || 0;
+    });
+    
+    return {
+        labels: months,
+        data: monthMinutes
+    };
+}
+
+function getTopDirectors(movies) {
+    const directors = {};
+    movies.forEach(movie => {
+        if (movie.director && movie.director !== 'Unknown') {
+            directors[movie.director] = (directors[movie.director] || 0) + 1;
+        }
+    });
+    
+    return Object.entries(directors)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5);
+}
+
+function updateDirectorsList(elementId, directors) {
+    const listHtml = directors.map(([director, count]) => `
+        <div class="director-item">
+            <div class="director-name">${director}</div>
+            <div class="director-count">${count} film${count > 1 ? 's' : ''}</div>
+        </div>
+    `).join('');
+    
+    document.getElementById(elementId).innerHTML = listHtml;
+}
+
+function updateTopRatedDecades() {
+    const decades = {};
+    movieData.forEach(movie => {
+        const decade = Math.floor(movie.year / 10) * 10;
+        if (!decades[decade]) {
+            decades[decade] = { sum: 0, count: 0 };
+        }
+        decades[decade].sum += movie.rating;
+        decades[decade].count += 1;
+    });
+    
+    const sortedDecades = Object.entries(decades)
+        .map(([decade, data]) => [decade, data.sum / data.count])
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5);
+    
+    const listHtml = sortedDecades.map(([decade, avgRating]) => `
+        <div class="decade-item">
+            <div class="decade-name">${decade}s</div>
+            <div class="decade-rating">
+                <span class="rating-stars">★ ${avgRating.toFixed(1)}</span>
+            </div>
+        </div>
+    `).join('');
+    
+    document.getElementById('top-decades').innerHTML = listHtml;
+}
+
+function updateGenreBreakdown() {
+    const genreData = getGenreDistribution();
+    const listHtml = genreData.labels.map((genre, index) => `
+        <div class="genre-item">
+            <div class="genre-name">${genre}</div>
+            <div class="genre-count">${genreData.data[index]} films</div>
+        </div>
+    `).join('');
+    
+    document.getElementById('genre-breakdown').innerHTML = listHtml;
+}
+
+function updateCountryCount() {
+    const countries = {};
+    movieData.forEach(movie => {
+        if (movie.country && movie.country !== 'Unknown') {
+            countries[movie.country] = (countries[movie.country] || 0) + 1;
+        }
+    });
+    
+    const sortedCountries = Object.entries(countries)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 10);
+    
+    const listHtml = sortedCountries.map(([country, count]) => `
+        <div class="country-item">
+            <div class="country-name">${country}</div>
+            <div class="country-count">${count} films</div>
+        </div>
+    `).join('');
+    
+    document.getElementById('country-count').innerHTML = listHtml;
+}
+
+function updateTopRatedFilms() {
+    // Top Rated Films This Period
+    const currentYear = new Date().getFullYear();
+    const thisYearMovies = movieData.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
+    const topRatedThisPeriod = [...thisYearMovies]
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 10);
+    
+    updateMovieList('top-rated-this-period', topRatedThisPeriod);
+
+    // Top Rated Films All Time
+    const topRatedAllTime = [...movieData]
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 10);
+    
+    updateMovieList('top-rated-all-time', topRatedAllTime);
+}
+
+function updateMovieList(elementId, movies) {
+    const listHtml = movies.map(movie => `
+        <div class="movie-item">
+            <div class="movie-title">${movie.title}</div>
+            <div class="movie-meta">
+                <span>${movie.director}</span>
+                <span class="movie-rating">★ ${movie.rating}</span>
+            </div>
+        </div>
+    `).join('');
+    
+    document.getElementById(elementId).innerHTML = listHtml;
 }
