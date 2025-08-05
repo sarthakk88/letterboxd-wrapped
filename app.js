@@ -137,12 +137,13 @@ function setupEventListeners() {
         });
     });
 
-    // Sub-tab navigation (if you have separate Diary/Stats buttons within each main tab)
+    // Sub-tab navigation
     document.querySelectorAll('.sub-tab-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', e => {
             e.preventDefault();
-            const subTabName = this.getAttribute('data-sub-tab');
-            switchSubTab(subTabName);
+            const subTab   = btn.dataset.subtab;          // id string
+            const mainTab  = btn.closest('.tab-panel');   // current main tab element
+            switchSubTab(subTab, mainTab);
         });
     });
 
@@ -256,6 +257,21 @@ function switchTab(tabName) {
     } else if (subTabId === 'stats-all-time') {
         updateStatsTab('all-time', movieData);
     }
+}
+
+function switchSubTab(subTabName, mainTabEl) {
+    // activate button
+    mainTabEl.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.toggle(
+        'active', b.dataset.subtab === subTabName));
+    // activate panel
+    mainTabEl.querySelectorAll('.sub-tab-panel').forEach(p => p.classList.toggle(
+        'active', p.id === subTabName));
+
+    // load content
+    if      (subTabName === 'diary-this-period') updateDiaryTab('this-period', filteredMovies);
+    else if (subTabName === 'stats-this-period') updateStatsTab('this-period', filteredMovies);
+    else if (subTabName === 'diary-all-time')    updateDiaryTab('all-time',  movieData);
+    else if (subTabName === 'stats-all-time')    updateStatsTab('all-time',  movieData);
 }
 
 function updateAllViews() {
@@ -522,19 +538,14 @@ function getMonthlyActivityCount(movies) {
     };
 }
 
-function getMonthlyActivityMinutes() {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const monthMinutes = new Array(12).fill(0);
-    
-    filteredMovies.forEach(movie => {
-        const month = new Date(movie.watch_date).getMonth();
-        monthMinutes[month] += movie.runtime || 0;
+function getMonthlyActivityMinutes(movies) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const mins   = new Array(12).fill(0);
+    movies.forEach(m => {
+        const d = new Date(m.watch_date);
+        if (!isNaN(d)) mins[d.getMonth()] += m.runtime || 0;
     });
-    
-    return {
-        labels: months,
-        data: monthMinutes
-    };
+    return { labels: months, data: mins };
 }
 
 function getTopDirectors(movies) {
