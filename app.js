@@ -19,9 +19,7 @@ const chartColors = [
 ];
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
+document.addEventListener('DOMContentLoaded', initializeApp);
 
 async function initializeApp() {
     try {
@@ -75,17 +73,13 @@ function loadCSVData() {
                         director:    row.director   || row.Director   || 'Unknown',
                         genre:       row.genre      || row.Genre      || 'Unknown',
                         rating:      parseFloat(row.rating || row.Rating) || 0,
-                        watch_date:  new Date(row.watch_date || row['Watch Date'] || row.date),
+                        watch_date: new Date(row.watch_date || row['Watch Date'] || row.date),
                         runtime:     parseInt(row.runtime || row.Runtime) || 90,
                         country:     row.country    || row.Country    || 'Unknown',
                         cast:        row.cast       || row.Cast       || ''
                     })).filter(m => !isNaN(m.watch_date));
 
-                    // Determine the most recent year in the full dataset
-                    const years = movieData.map(m => m.watch_date.getFullYear());
-                    const latestYear = Math.max(...years);
-
-                    // Initialize filteredMovies to movies from the latest year by default
+                    const latestYear = Math.max(...movieData.map(m => m.watch_date.getFullYear()));
                     filteredMovies = movieData.filter(m => m.watch_date.getFullYear() === latestYear);
 
                     resolve();
@@ -132,17 +126,16 @@ function setupEventListeners() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
-            const tabName = this.getAttribute('data-tab');
-            switchTab(tabName);
+            switchTab(this.dataset.tab);
         });
     });
 
-    // Sub-tab navigation
+    // **Correction 2**: Sub-tab navigation event listeners
     document.querySelectorAll('.sub-tab-btn').forEach(btn => {
-        btn.addEventListener('click', e => {
+        btn.addEventListener('click', function(e) {
             e.preventDefault();
-            const subTab   = btn.dataset.subtab;          // id string
-            const mainTab  = btn.closest('.tab-panel');   // current main tab element
+            const subTab  = this.dataset.subtab;
+            const mainTab = this.closest('.tab-panel');
             switchSubTab(subTab, mainTab);
         });
     });
@@ -234,49 +227,37 @@ function switchTab(tabName) {
     console.log('Switching to tab:', tabName);
 
     // Update main tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
-    if (activeBtn) activeBtn.classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
 
     // Update main tab panels
-    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-    const activePanel = document.getElementById(`${tabName}-tab`);
-    if (activePanel) {
-        activePanel.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById(`${tabName}-tab`);
+    if (panel) {
+        panel.classList.add('active');
 
-        // Reset its sub-tabs: deactivate all
-        activePanel.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
-        activePanel.querySelectorAll('.sub-tab-panel').forEach(p => p.classList.remove('active'));
+        // **Correction 3**: Reset to first sub-tab
+        panel.querySelectorAll('.sub-tab-btn, .sub-tab-panel').forEach(el => el.classList.remove('active'));
+        const firstBtn   = panel.querySelector('.sub-tab-btn');
+        const firstPanel = panel.querySelector('.sub-tab-panel');
+        firstBtn?.classList.add('active');
+        firstPanel?.classList.add('active');
 
-        // Activate first sub-tab button and panel
-        const firstBtn = activePanel.querySelector('.sub-tab-btn');
-        const firstPanel = activePanel.querySelector('.sub-tab-panel');
-        if (firstBtn && firstPanel) {
-            firstBtn.classList.add('active');
-            firstPanel.classList.add('active');
-        }
-    }
-
-    // After resetting, invoke the same logic as switchSubTab to load content
-    const nowActiveSub = activePanel.querySelector('.sub-tab-btn.active')?.dataset.subtab;
-    if (nowActiveSub) {
-        switchSubTab(nowActiveSub, activePanel);
+        // Load its content
+        switchSubTab(firstBtn.dataset.subtab, panel);
     }
 }
 
 function switchSubTab(subTabName, mainTabEl) {
-    // activate button
-    mainTabEl.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.toggle(
-        'active', b.dataset.subtab === subTabName));
-    // activate panel
-    mainTabEl.querySelectorAll('.sub-tab-panel').forEach(p => p.classList.toggle(
-        'active', p.id === subTabName));
+    // Activate the clicked sub-tab
+    mainTabEl.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.subtab === subTabName));
+    mainTabEl.querySelectorAll('.sub-tab-panel').forEach(p => p.classList.toggle('active', p.id === subTabName));
 
-    // load content
-    if      (subTabName === 'diary-this-period') updateDiaryTab('this-period', filteredMovies);
+    // Load content
+    if (subTabName === 'diary-this-period')      updateDiaryTab('this-period', filteredMovies);
     else if (subTabName === 'stats-this-period') updateStatsTab('this-period', filteredMovies);
-    else if (subTabName === 'diary-all-time')    updateDiaryTab('all-time',  movieData);
-    else if (subTabName === 'stats-all-time')    updateStatsTab('all-time',  movieData);
+    else if (subTabName === 'diary-all-time')    updateDiaryTab('all-time', movieData);
+    else if (subTabName === 'stats-all-time')    updateStatsTab('all-time', movieData);
 }
 
 function updateAllViews() {
