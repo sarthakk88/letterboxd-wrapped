@@ -410,7 +410,7 @@ function updateRecentActivity(scope, movies) {
         </div>
     `).join('');
 
-    document.getElementById('recent-activity-this-period').innerHTML = listHtml;
+    document.getElementById('recent-activity').innerHTML = listHtml;
 }
 
 function updateStatsTab(scope, movies) {
