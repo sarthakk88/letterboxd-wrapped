@@ -241,21 +241,26 @@ function switchTab(tabName) {
     // Update main tab panels
     document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
     const activePanel = document.getElementById(`${tabName}-tab`);
-    if (activePanel) activePanel.classList.add('active');
+    if (activePanel) {
+        activePanel.classList.add('active');
 
-    // Determine which sub-tab is active inside the selected main tab
-    const activeSubTab = activePanel?.querySelector('.sub-tab-panel.active');
-    const subTabId = activeSubTab?.id;
+        // Reset its sub-tabs: deactivate all
+        activePanel.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+        activePanel.querySelectorAll('.sub-tab-panel').forEach(p => p.classList.remove('active'));
 
-    // Load appropriate content
-    if (subTabId === 'diary-this-period') {
-        updateDiaryTab('this-period', filteredMovies);
-    } else if (subTabId === 'stats-this-period') {
-        updateStatsTab('this-period', filteredMovies);
-    } else if (subTabId === 'diary-all-time') {
-        updateDiaryTab('all-time', movieData);
-    } else if (subTabId === 'stats-all-time') {
-        updateStatsTab('all-time', movieData);
+        // Activate first sub-tab button and panel
+        const firstBtn = activePanel.querySelector('.sub-tab-btn');
+        const firstPanel = activePanel.querySelector('.sub-tab-panel');
+        if (firstBtn && firstPanel) {
+            firstBtn.classList.add('active');
+            firstPanel.classList.add('active');
+        }
+    }
+
+    // After resetting, invoke the same logic as switchSubTab to load content
+    const nowActiveSub = activePanel.querySelector('.sub-tab-btn.active')?.dataset.subtab;
+    if (nowActiveSub) {
+        switchSubTab(nowActiveSub, activePanel);
     }
 }
 
