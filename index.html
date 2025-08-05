@@ -44,116 +44,168 @@
             <!-- Filter Status -->
             <div id="filterStatus" class="filter-status"></div>
 
-            <!-- Tab Navigation -->
+            <!-- Main Tab Navigation -->
             <nav class="tab-nav">
-                <button class="tab-btn active" data-tab="diary">Diary</button>
-                <button class="tab-btn" data-tab="stats">Stats</button>
-                <button class="tab-btn" data-tab="lists">Lists</button>
+                <button class="tab-btn active" data-tab="this-period">This Period</button>
+                <button class="tab-btn" data-tab="all-time">All Time</button>
             </nav>
 
             <!-- Tab Content -->
             <div class="tab-content">
-                <!-- Diary Tab -->
-                <div id="diary-tab" class="tab-panel active">
-                    <!-- Stats Cards -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number" id="films-this-period">-</div>
-                            <div class="stat-label">Films This Period</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="films-all-time">-</div>
-                            <div class="stat-label">Films All Time</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="average-rating">-</div>
-                            <div class="stat-label">Average Rating</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="total-watch-time">-</div>
-                            <div class="stat-label">Total Watch Time</div>
-                        </div>
-                    </div>
+                <!-- THIS PERIOD TAB -->
+                <div id="this-period-tab" class="tab-panel active">
+                    <!-- Sub-tabs -->
+                    <nav class="sub-tab-nav">
+                        <button class="sub-tab-btn active" data-subtab="diary-this-period">Diary</button>
+                        <button class="sub-tab-btn" data-subtab="stats-this-period">Stats</button>
+                    </nav>
 
-                    <!-- Charts Grid 2x2 -->
-                    <div class="charts-grid-2x2">
-                        <div class="chart-container">
-                            <h3>Genre Distribution</h3>
-                            <div style="position: relative; height: 250px;">
-                                <canvas id="genre-pie-chart"></canvas>
+                    <!-- Diary (This Period) -->
+                    <div id="diary-this-period" class="sub-tab-panel active">
+                        <!-- Stats Cards -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number" id="films-this-period">-</div>
+                                <div class="stat-label">Films This Period</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="average-rating-this-period">-</div>
+                                <div class="stat-label">Average Rating</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="total-watch-time-this-period">-</div>
+                                <div class="stat-label">Total Watch Time</div>
                             </div>
                         </div>
-                        <div class="chart-container">
-                            <h3>Rating Distribution</h3>
-                            <div style="position: relative; height: 250px;">
-                                <canvas id="rating-bar-chart"></canvas>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <h3>Monthly Activity (Count)</h3>
-                            <div style="position: relative; height: 250px;">
-                                <canvas id="monthly-count-chart"></canvas>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <h3>Monthly Activity (Minutes)</h3>
-                            <div style="position: relative; height: 250px;">
-                                <canvas id="monthly-minutes-chart"></canvas>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Directors Lists -->
-                    <div class="directors-section">
-                        <div class="directors-grid">
-                            <div class="list-section">
-                                <h3>Top Directors (This Period)</h3>
-                                <div id="directors-this-period" class="director-list"></div>
+                        <!-- Charts -->
+                        <div class="charts-grid-2x2">
+                            <div class="chart-container">
+                                <h3>Genre Distribution</h3>
+                                <canvas id="genre-pie-chart-this-period"></canvas>
                             </div>
-                            <div class="list-section">
-                                <h3>Top Directors (All Time)</h3>
-                                <div id="directors-all-time" class="director-list"></div>
+                            <div class="chart-container">
+                                <h3>Rating Distribution</h3>
+                                <canvas id="rating-bar-chart-this-period"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Monthly Activity (Count)</h3>
+                                <canvas id="monthly-count-chart-this-period"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Monthly Activity (Minutes)</h3>
+                                <canvas id="monthly-minutes-chart-this-period"></canvas>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Recent Activity -->
-                    <div class="recent-section">
-                        <div class="list-section">
+                        <!-- Directors (This Period) -->
+                        <div class="directors-section">
+                            <h3>Top Directors</h3>
+                            <div id="directors-this-period" class="director-list"></div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="recent-section">
                             <h3>Recent Activity</h3>
                             <div id="recent-activity" class="movie-list"></div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Stats Tab -->
-                <div id="stats-tab" class="tab-panel">
-                    <div class="stats-lists-grid">
-                        <div class="list-section">
-                            <h3>Top Rated Decades</h3>
-                            <div id="top-decades" class="decade-list"></div>
-                        </div>
-                        <div class="list-section">
-                            <h3>Genre Breakdown</h3>
-                            <div id="genre-breakdown" class="genre-list"></div>
-                        </div>
-                        <div class="list-section">
-                            <h3>Country Count</h3>
-                            <div id="country-count" class="country-list"></div>
+                    <!-- Stats (This Period) -->
+                    <div id="stats-this-period" class="sub-tab-panel">
+                        <div class="stats-lists-grid">
+                            <div class="list-section">
+                                <h3>Top Rated Decades</h3>
+                                <div id="top-decades-this-period" class="decade-list"></div>
+                            </div>
+                            <div class="list-section">
+                                <h3>Genre Breakdown</h3>
+                                <div id="genre-breakdown-this-period" class="genre-list"></div>
+                            </div>
+                            <div class="list-section">
+                                <h3>Country Count</h3>
+                                <div id="country-count-this-period" class="country-list"></div>
+                            </div>
+                            <div class="list-section">
+                                <h3>Top Rated Films (This Period)</h3>
+                                <div id="top-rated-this-period" class="movie-list"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Lists Tab -->
-                <div id="lists-tab" class="tab-panel">
-                    <div class="lists-grid">
-                        <div class="list-section">
-                            <h3>Top Rated Films (This Period)</h3>
-                            <div id="top-rated-this-period" class="movie-list"></div>
+                <!-- ALL TIME TAB -->
+                <div id="all-time-tab" class="tab-panel">
+                    <!-- Sub-tabs -->
+                    <nav class="sub-tab-nav">
+                        <button class="sub-tab-btn active" data-subtab="diary-all-time">Diary</button>
+                        <button class="sub-tab-btn" data-subtab="stats-all-time">Stats</button>
+                    </nav>
+
+                    <!-- Diary (All Time) -->
+                    <div id="diary-all-time" class="sub-tab-panel active">
+                        <!-- Stats Cards -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number" id="films-all-time">-</div>
+                                <div class="stat-label">Films All Time</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="average-rating">-</div>
+                                <div class="stat-label">Average Rating</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="total-watch-time">-</div>
+                                <div class="stat-label">Total Watch Time</div>
+                            </div>
                         </div>
-                        <div class="list-section">
-                            <h3>Top Rated Films (All Time)</h3>
-                            <div id="top-rated-all-time" class="movie-list"></div>
+
+                        <!-- Charts -->
+                        <div class="charts-grid-2x2">
+                            <div class="chart-container">
+                                <h3>Genre Distribution</h3>
+                                <canvas id="genre-pie-chart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Rating Distribution</h3>
+                                <canvas id="rating-bar-chart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Monthly Activity (Count)</h3>
+                                <canvas id="monthly-count-chart-all-time"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Monthly Activity (Minutes)</h3>
+                                <canvas id="monthly-minutes-chart-all-time"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Directors (All Time) -->
+                        <div class="directors-section">
+                            <h3>Top Directors (All Time)</h3>
+                            <div id="directors-all-time" class="director-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Stats (All Time) -->
+                    <div id="stats-all-time" class="sub-tab-panel">
+                        <div class="stats-lists-grid">
+                            <div class="list-section">
+                                <h3>Top Rated Decades</h3>
+                                <div id="top-decades" class="decade-list"></div>
+                            </div>
+                            <div class="list-section">
+                                <h3>Genre Breakdown</h3>
+                                <div id="genre-breakdown" class="genre-list"></div>
+                            </div>
+                            <div class="list-section">
+                                <h3>Country Count</h3>
+                                <div id="country-count" class="country-list"></div>
+                            </div>
+                            <div class="list-section">
+                                <h3>Top Rated Films (All Time)</h3>
+                                <div id="top-rated-all-time" class="movie-list"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

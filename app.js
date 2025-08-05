@@ -80,7 +80,9 @@ function loadCSVData() {
                         cast: row.cast || row.Cast || ''
                     }));
                     // Initialize filtered movies to all movies
-                    filteredMovies = [...movieData];
+                    const currentDate = new Date();
+                    const currentYear = currentDate.getFullYear();
+                    filteredMovies = movieData.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
                     resolve();
                 } else {
                     reject('No data found in CSV');
@@ -187,150 +189,192 @@ function clearFilters() {
 }
 
 function refreshCurrentTab() {
-    const activeTab = document.querySelector('.tab-panel.active');
-    if (activeTab) {
-        const tabId = activeTab.id;
-        if (tabId === 'diary-tab') {
-            updateDiaryTab();
-        } else if (tabId === 'stats-tab') {
-            updateStatsTab();
-        } else if (tabId === 'lists-tab') {
-            updateListsTab();
-        }
+    // Find the active main tab
+    const activeMainTab = document.querySelector('.tab-panel.active');
+    if (!activeMainTab) return;
+
+    const mainTabId = activeMainTab.id; // "this-period-tab" or "all-time-tab"
+
+    // Find the active sub-tab within that main tab
+    const activeSubTab = activeMainTab.querySelector('.sub-tab-panel.active');
+    if (!activeSubTab) return;
+
+    const subTabId = activeSubTab.id; 
+    // e.g., "diary-this-period", "stats-this-period", "diary-all-time", "stats-all-time"
+
+    // Call the appropriate update function
+    if (subTabId === 'diary-this-period') {
+        updateDiaryTab('this-period', filteredMovies);
+    } else if (subTabId === 'stats-this-period') {
+        updateStatsTab('this-period', filteredMovies);
+    } else if (subTabId === 'diary-all-time') {
+        updateDiaryTab('all-time', movieData);
+    } else if (subTabId === 'stats-all-time') {
+        updateStatsTab('all-time', movieData);
     }
 }
 
-
 function switchTab(tabName) {
-    console.log('Switching to tab:', tabName); // Debug log
-    
-    // Update tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
+    console.log('Switching to tab:', tabName);
+
+    // Update main tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
-    if (activeBtn) {
-        activeBtn.classList.add('active');
-    }
+    if (activeBtn) activeBtn.classList.add('active');
 
-    // Update tab panels
-    document.querySelectorAll('.tab-panel').forEach(panel => {
-        panel.classList.remove('active');
-    });
+    // Update main tab panels
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
     const activePanel = document.getElementById(`${tabName}-tab`);
-    if (activePanel) {
-        activePanel.classList.add('active');
-    }
+    if (activePanel) activePanel.classList.add('active');
 
-    // Update content based on active tab
-    if (tabName === 'stats') {
-        updateStatsTab();
-    } else if (tabName === 'lists') {
-        updateListsTab();
+    // Determine which sub-tab is active inside the selected main tab
+    const activeSubTab = activePanel?.querySelector('.sub-tab-panel.active');
+    const subTabId = activeSubTab?.id;
+
+    // Load appropriate content
+    if (subTabId === 'diary-this-period') {
+        updateDiaryTab('this-period', filteredMovies);
+    } else if (subTabId === 'stats-this-period') {
+        updateStatsTab('this-period', filteredMovies);
+    } else if (subTabId === 'diary-all-time') {
+        updateDiaryTab('all-time', movieData);
+    } else if (subTabId === 'stats-all-time') {
+        updateStatsTab('all-time', movieData);
     }
 }
 
 function updateAllViews() {
-    updateDiaryTab();
-    // Don't load other tabs immediately, load them when switched to
+    // Load "This Period" by default
+    updateDiaryTab('this-period', filteredMovies);
+
+    // Other tabs (Stats This Period, Diary All Time, Stats All Time) will update via refreshCurrentTab()
 }
 
-function updateDiaryTab() {
-    updateStatsCards();
-    updateDiaryCharts();
-    updateDirectorsLists();
-    updateRecentActivity();
+function updateDiaryTab(scope, movies) {
+    // Update stats cards (expects scope and movies)
+    updateStatsCards(scope, movies);
+
+    // Update charts (expects scope and movies)
+    updateDiaryCharts(scope, movies);
+
+    // Update directors lists (expects scope and movies)
+    updateDirectorsLists(scope, movies);
+
+    // Update recent activity (expects scope and movies)
+    updateRecentActivity(scope, movies);
 }
 
-function updateStatsCards() {
-    const totalFilms = filteredMovies.length;
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const filmsThisPeriod = filteredMovies.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear).length;
-    // Calculate average rating only for movies where a user provided a rating (ignore null, undefined, empty, or 0)
-    const ratedMovies = filteredMovies.filter(
-        movie => movie.rating !== null && movie.rating !== undefined && movie.rating !== "" && Number(movie.rating) > 0
+function updateStatsCards(scope, movies) {
+    // Common calculations
+    const totalFilms = movies.length;
+    const ratedMovies = movies.filter(
+        movie => movie.rating !== null &&
+                 movie.rating !== undefined &&
+                 movie.rating !== "" &&
+                 Number(movie.rating) > 0
     );
     const averageRating = ratedMovies.length > 0
-      ? (ratedMovies.reduce((sum, movie) => sum + parseFloat(movie.rating), 0) / ratedMovies.length).toFixed(1)
-      : '0.0';
-    const totalMinutes = filteredMovies.reduce((sum, movie) => sum + (movie.runtime || 0), 0);
+        ? (ratedMovies.reduce((sum, movie) => sum + parseFloat(movie.rating), 0) / ratedMovies.length).toFixed(1)
+        : '0.0';
+    const totalMinutes = movies.reduce((sum, movie) => sum + (movie.runtime || 0), 0);
     const totalHours = Math.round(totalMinutes / 60);
 
-    document.getElementById('films-this-period').textContent = filmsThisPeriod;
-    document.getElementById('films-all-time').textContent = totalFilms;
-    document.getElementById('average-rating').textContent = averageRating;
-    document.getElementById('total-watch-time').textContent = totalHours + 'h';
+    // Update DOM based on scope
+    if (scope === 'this-period') {
+        document.getElementById('films-this-period').textContent = totalFilms;
+        document.getElementById('average-rating-this-period').textContent = averageRating;
+        document.getElementById('total-watch-time-this-period').textContent = totalHours + 'h';
+    } else if (scope === 'all-time') {
+        document.getElementById('films-all-time').textContent = totalFilms;
+        document.getElementById('average-rating').textContent = averageRating;
+        document.getElementById('total-watch-time').textContent = totalHours + 'h';
+    }
 }
 
-function updateDiaryCharts() {
+function updateDiaryCharts(scope, movies) {
     // Genre Distribution (Pie Chart)
-    const genreData = getGenreDistribution();
-    createChart('genre-pie-chart', 'pie', {
-        labels: genreData.labels,
-        datasets: [{
-            data: genreData.data,
-            backgroundColor: chartColors.slice(0, genreData.labels.length)
-        }]
-    });
+    const genreData = getGenreDistribution(movies);
+    createChart(
+        scope === 'this-period' ? 'genre-pie-chart-this-period' : 'genre-pie-chart',
+        'pie',
+        {
+            labels: genreData.labels,
+            datasets: [{
+                data: genreData.data,
+                backgroundColor: chartColors.slice(0, genreData.labels.length)
+            }]
+        }
+    );
 
     // Rating Distribution (Bar Chart)
-    const ratingData = getRatingDistribution();
-    createChart('rating-bar-chart', 'bar', {
-        labels: ratingData.labels,
-        datasets: [{
-            label: 'Films',
-            data: ratingData.data,
-            backgroundColor: chartColors[0]
-        }]
-    });
+    const ratingData = getRatingDistribution(movies);
+    createChart(
+        scope === 'this-period' ? 'rating-bar-chart-this-period' : 'rating-bar-chart',
+        'bar',
+        {
+            labels: ratingData.labels,
+            datasets: [{
+                label: 'Films',
+                data: ratingData.data,
+                backgroundColor: chartColors[0]
+            }]
+        }
+    );
 
     // Monthly Activity Count (Line Chart)
-    const monthlyCountData = getMonthlyActivityCount();
-    createChart('monthly-count-chart', 'line', {
-        labels: monthlyCountData.labels,
-        datasets: [{
-            label: 'Films',
-            data: monthlyCountData.data,
-            borderColor: chartColors[1],
-            backgroundColor: chartColors[1] + '20',
-            fill: true,
-            tension: 0.4
-        }]
-    });
+    const monthlyCountData = getMonthlyActivityCount(movies);
+    createChart(
+        scope === 'this-period' ? 'monthly-count-chart-this-period' : 'monthly-count-chart',
+        'line',
+        {
+            labels: monthlyCountData.labels,
+            datasets: [{
+                label: 'Films',
+                data: monthlyCountData.data,
+                borderColor: chartColors[1],
+                backgroundColor: chartColors[1] + '20',
+                fill: true,
+                tension: 0.4
+            }]
+        }
+    );
 
     // Monthly Activity Minutes (Line Chart)
-    const monthlyMinutesData = getMonthlyActivityMinutes();
-    createChart('monthly-minutes-chart', 'line', {
-        labels: monthlyMinutesData.labels,
-        datasets: [{
-            label: 'Minutes',
-            data: monthlyMinutesData.data,
-            borderColor: chartColors[2],
-            backgroundColor: chartColors[2] + '20',
-            fill: true,
-            tension: 0.4
-        }]
-    });
+    const monthlyMinutesData = getMonthlyActivityMinutes(movies);
+    createChart(
+        scope === 'this-period' ? 'monthly-minutes-chart-this-period' : 'monthly-minutes-chart',
+        'line',
+        {
+            labels: monthlyMinutesData.labels,
+            datasets: [{
+                label: 'Minutes',
+                data: monthlyMinutesData.data,
+                borderColor: chartColors[2],
+                backgroundColor: chartColors[2] + '20',
+                fill: true,
+                tension: 0.4
+            }]
+        }
+    );
 }
 
-function updateDirectorsLists() {
-    // Top Directors This Period
-    const currentYear = new Date().getFullYear();
-    const thisYearMovies = filteredMovies.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
-    const directorsThisPeriod = getTopDirectors(thisYearMovies);
-    updateDirectorsList('directors-this-period', directorsThisPeriod);
+function updateDirectorsLists(scope, movies) {
+    const directors = getTopDirectors(movies);
 
-    // Top Directors All Time
-    const directorsAllTime = getTopDirectors(filteredMovies);
-    updateDirectorsList('directors-all-time', directorsAllTime);
+    if (scope === 'this-period') {
+        updateDirectorsList('directors-this-period', directors);
+    } else if (scope === 'all-time') {
+        updateDirectorsList('directors-all-time', directors);
+    }
 }
 
-function updateRecentActivity() {
-    const recentMovies = [...filteredMovies]
+function updateRecentActivity(scope, movies) {
+    if (scope !== 'this-period') return; // Only update for This Period
+
+    const recentMovies = [...movies]
         .sort((a, b) => new Date(b.watch_date) - new Date(a.watch_date))
         .slice(0, 5);
-    
+
     const listHtml = recentMovies.map(movie => `
         <div class="movie-item">
             <div class="movie-title">${movie.title}</div>
@@ -340,18 +384,27 @@ function updateRecentActivity() {
             </div>
         </div>
     `).join('');
-    
-    document.getElementById('recent-activity').innerHTML = listHtml;
+
+    document.getElementById('recent-activity-this-period').innerHTML = listHtml;
 }
 
-function updateStatsTab() {
-    updateTopRatedDecades();
-    updateGenreBreakdown();
-    updateCountryCount();
-}
+function updateStatsTab(scope, movies) {
+    updateTopRatedDecades(
+        scope === 'this-period' ? 'top-decades-this-period' : 'top-decades',
+        movies
+    );
 
-function updateListsTab() {
-    updateTopRatedFilms();
+    updateGenreBreakdown(
+        scope === 'this-period' ? 'genre-breakdown-this-period' : 'genre-breakdown',
+        movies
+    );
+
+    updateCountryCount(
+        scope === 'this-period' ? 'country-count-this-period' : 'country-count',
+        movies
+    );
+
+    updateTopRatedFilms(scope, movies);
 }
 
 function createChart(canvasId, type, data) {
@@ -391,52 +444,63 @@ function createChart(canvasId, type, data) {
     });
 }
 
-// Data processing functions
-function getGenreDistribution() {
+function getGenreDistribution(movies) {
     const genres = {};
-    filteredMovies.forEach(movie => {
-        const movieGenres = movie.genre.split(',').map(g => g.trim());
+
+    movies.forEach(movie => {
+        const movieGenres = movie.genre
+            .split(',')
+            .map(g => g.trim());
+
         movieGenres.forEach(genre => {
             if (genre && genre !== 'Unknown') {
                 genres[genre] = (genres[genre] || 0) + 1;
             }
         });
     });
-    
+
     const sortedGenres = Object.entries(genres)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([, a], [, b]) => b - a)
         .slice(0, 10);
-    
+
     return {
         labels: sortedGenres.map(([genre]) => genre),
-        data: sortedGenres.map(([,count]) => count)
+        data: sortedGenres.map(([, count]) => count)
     };
 }
 
-function getRatingDistribution() {
+function getRatingDistribution(movies) {
     const ratings = {};
-    filteredMovies.forEach(movie => {
+
+    movies.forEach(movie => {
         const rating = Math.floor(movie.rating);
         if (rating > 0) {
             ratings[rating] = (ratings[rating] || 0) + 1;
         }
     });
-    
+
+    const sortedRatings = Object.keys(ratings)
+        .map(Number)
+        .sort((a, b) => a - b);
+
     return {
-        labels: Object.keys(ratings).sort(),
-        data: Object.values(ratings)
+        labels: sortedRatings,
+        data: sortedRatings.map(rating => ratings[rating])
     };
 }
 
-function getMonthlyActivityCount() {
+function getMonthlyActivityCount(movies) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const monthCounts = new Array(12).fill(0);
-    
-    filteredMovies.forEach(movie => {
-        const month = new Date(movie.watch_date).getMonth();
-        monthCounts[month]++;
+
+    movies.forEach(movie => {
+        const watchDate = new Date(movie.watch_date);
+        if (!isNaN(watchDate)) {
+            const month = watchDate.getMonth();
+            monthCounts[month]++;
+        }
     });
-    
+
     return {
         labels: months,
         data: monthCounts
@@ -482,9 +546,10 @@ function updateDirectorsList(elementId, directors) {
     document.getElementById(elementId).innerHTML = listHtml;
 }
 
-function updateTopRatedDecades() {
+function updateTopRatedDecades(containerId, movies) {
     const decades = {};
-    filteredMovies.forEach(movie => {
+
+    movies.forEach(movie => {
         if (
             movie.year &&
             movie.rating !== null &&
@@ -504,12 +569,12 @@ function updateTopRatedDecades() {
             decades[decade].count += 1;
         }
     });
-    
+
     const sortedDecades = Object.entries(decades)
         .map(([decade, data]) => [decade, data.sum / data.count])
-        .sort(([,a], [,b]) => b - a)
+        .sort(([, a], [, b]) => b - a)
         .slice(0, 5);
-    
+
     const listHtml = sortedDecades.map(([decade, avgRating]) => `
         <div class="decade-item">
             <div class="decade-name">${decade}s</div>
@@ -518,60 +583,54 @@ function updateTopRatedDecades() {
             </div>
         </div>
     `).join('');
-    
-    document.getElementById('top-decades').innerHTML = listHtml;
+
+    document.getElementById(containerId).innerHTML = listHtml;
 }
 
-function updateGenreBreakdown() {
-    const genreData = getGenreDistribution();
+function updateGenreBreakdown(containerId, movies) {
+    const genreData = getGenreDistribution(movies);
+
     const listHtml = genreData.labels.map((genre, index) => `
         <div class="genre-item">
             <div class="genre-name">${genre}</div>
             <div class="genre-count">${genreData.data[index]} films</div>
         </div>
     `).join('');
-    
-    document.getElementById('genre-breakdown').innerHTML = listHtml;
+
+    document.getElementById(containerId).innerHTML = listHtml;
 }
 
-function updateCountryCount() {
+function updateCountryCount(containerId, movies) {
     const countries = {};
-    filteredMovies.forEach(movie => {
+
+    movies.forEach(movie => {
         if (movie.country && movie.country !== 'Unknown') {
             countries[movie.country] = (countries[movie.country] || 0) + 1;
         }
     });
-    
+
     const sortedCountries = Object.entries(countries)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([, a], [, b]) => b - a)
         .slice(0, 10);
-    
+
     const listHtml = sortedCountries.map(([country, count]) => `
         <div class="country-item">
             <div class="country-name">${country}</div>
             <div class="country-count">${count} films</div>
         </div>
     `).join('');
-    
-    document.getElementById('country-count').innerHTML = listHtml;
+
+    document.getElementById(containerId).innerHTML = listHtml;
 }
 
-function updateTopRatedFilms() {
-    // Top Rated Films This Period
-    const currentYear = new Date().getFullYear();
-    const thisYearMovies = filteredMovies.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
-    const topRatedThisPeriod = [...thisYearMovies]
+function updateTopRatedFilms(scope, movies) {
+    const topRated = [...movies]
+        .filter(movie => movie.rating !== null && movie.rating !== undefined && movie.rating !== "")
         .sort((a, b) => b.rating - a.rating)
         .slice(0, 10);
-    
-    updateMovieList('top-rated-this-period', topRatedThisPeriod);
 
-    // Top Rated Films All Time
-    const topRatedAllTime = [...filteredMovies]
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 10);
-    
-    updateMovieList('top-rated-all-time', topRatedAllTime);
+    const containerId = scope === 'this-period' ? 'top-rated-this-period' : 'top-rated-all-time';
+    updateMovieList(containerId, topRated);
 }
 
 function updateMovieList(elementId, movies) {

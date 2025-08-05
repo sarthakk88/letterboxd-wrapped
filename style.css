@@ -1155,6 +1155,58 @@ body {
     animation: slideIn 0.3s ease-out;
 }
 
+/* Sub-Tab Navigation */
+.sub-tab-nav {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+    background: var(--letterboxd-surface);
+    padding: 0.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--letterboxd-border);
+}
+
+/* Sub-Tab Buttons */
+.sub-tab-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--letterboxd-text-muted);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sub-tab-btn.active {
+    background: var(--letterboxd-green);
+    color: #fff;
+    box-shadow: var(--shadow-md);
+}
+
+.sub-tab-btn:hover:not(.active) {
+    background: var(--letterboxd-hover);
+    color: var(--letterboxd-text);
+}
+
+/* Sub-Tab Panels */
+.sub-tab-panel {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+    margin-top: 1rem;
+}
+
+.sub-tab-panel.active {
+    display: block;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .main-content {
