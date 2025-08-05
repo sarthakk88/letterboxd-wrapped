@@ -68,21 +68,26 @@ function loadCSVData() {
             skipEmptyLines: true,
             complete: function(results) {
                 if (results.data && results.data.length > 0) {
+                    // Populate movieData with entire dataset
                     movieData = results.data.map(row => ({
-                        title: row.title || row.Title || '',
-                        year: parseInt(row.year || row.Year) || new Date().getFullYear(),
-                        director: row.director || row.Director || 'Unknown',
-                        genre: row.genre || row.Genre || 'Unknown',
-                        rating: parseFloat(row.rating || row.Rating) || 0,
-                        watch_date: new Date(row.watch_date || row['Watch Date'] || row.date || new Date().toISOString().split('T')[0]),
-                        runtime: parseInt(row.runtime || row.Runtime) || 90,
-                        country: row.country || row.Country || 'Unknown',
-                        cast: row.cast || row.Cast || ''
-                    }));
-                    // Initialize filtered movies to all movies
-                    const currentDate = new Date();
-                    const currentYear = currentDate.getFullYear();
-                    filteredMovies = movieData.filter(movie => new Date(movie.watch_date).getFullYear() === currentYear);
+                        title:       row.title      || row.Title      || '',
+                        year:        parseInt(row.year || row.Year)   || new Date().getFullYear(),
+                        director:    row.director   || row.Director   || 'Unknown',
+                        genre:       row.genre      || row.Genre      || 'Unknown',
+                        rating:      parseFloat(row.rating || row.Rating) || 0,
+                        watch_date:  new Date(row.watch_date || row['Watch Date'] || row.date),
+                        runtime:     parseInt(row.runtime || row.Runtime) || 90,
+                        country:     row.country    || row.Country    || 'Unknown',
+                        cast:        row.cast       || row.Cast       || ''
+                    })).filter(m => !isNaN(m.watch_date));
+
+                    // Determine the most recent year in the full dataset
+                    const years = movieData.map(m => m.watch_date.getFullYear());
+                    const latestYear = Math.max(...years);
+
+                    // Initialize filteredMovies to movies from the latest year by default
+                    filteredMovies = movieData.filter(m => m.watch_date.getFullYear() === latestYear);
+
                     resolve();
                 } else {
                     reject('No data found in CSV');
