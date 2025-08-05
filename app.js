@@ -30,7 +30,7 @@ async function initializeApp() {
         showLoading(false);
     } catch (error) {
         console.error('Failed to initialize app:', error);
-        handleDataLoadError();
+        handleDataLoadError(error);
     }
 }
 
@@ -109,16 +109,24 @@ async function loadJSONStats() {
     }
 }
 
-function handleDataLoadError() {
+function handleDataLoadError(error) {
     showLoading(false);
+
+    const errorMessage = error?.message || (typeof error === 'string' ? error : 'Unknown error occurred');
+    const errorStack = error?.stack || '';
+
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
         <div style="text-align: center; padding: 4rem;">
             <h2>Data Loading Error</h2>
             <p>Could not load movie data. Please check the data files.</p>
+            <pre style="color: red; font-size: 0.9rem; text-align: left; overflow-x: auto;">
+            ${errorMessage}${errorStack ? `\n\nStack Trace:\n${errorStack}` : ''}
+            </pre>
             <button onclick="location.reload()" class="btn btn--primary">Retry</button>
         </div>
     `;
+    console.error('Data loading error:', error);
 }
 
 function setupEventListeners() {
