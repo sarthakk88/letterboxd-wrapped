@@ -128,7 +128,7 @@ function handleDataLoadError() {
 }
 
 function setupEventListeners() {
-    // Tab navigation - Fixed event listener
+    // Main tab navigation
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -136,6 +136,16 @@ function setupEventListeners() {
             switchTab(tabName);
         });
     });
+
+    // Sub-tab navigation (if you have separate Diary/Stats buttons within each main tab)
+    document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const subTabName = this.getAttribute('data-sub-tab');
+            switchSubTab(subTabName);
+        });
+    });
+
     // Date filter event listeners
     document.getElementById('filterStart').addEventListener('change', applyFilters);
     document.getElementById('filterEnd').addEventListener('change', applyFilters);
