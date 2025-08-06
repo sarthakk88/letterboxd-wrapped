@@ -199,7 +199,8 @@ function clearFilters() {
     document.getElementById('filterStatus').classList.remove('active');
 
     // Reset to all movies
-    filteredMovies = [...movieData];
+    const latestYear = Math.max(...movieData.map(m => m.watch_date.getFullYear()));
+    filteredMovies = movieData.filter(m => m.watch_date.getFullYear() === latestYear);
 
     // Refresh current tab
     refreshCurrentTab();
