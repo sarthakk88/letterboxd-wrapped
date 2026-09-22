@@ -1,7 +1,7 @@
 {
-  "total_films": 0,
-  "films_this_year": 0,
-  "average_rating": 0.0,
+  "total_films": 50,
+  "films_this_year": 50,
+  "average_rating": 3.3,
   "total_runtime": 0,
-  "last_updated": "2026-09-21T05:41:13.920271"
+  "last_updated": "2026-09-22T05:37:58.452759"
 }
